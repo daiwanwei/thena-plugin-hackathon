@@ -1,0 +1,8 @@
+node_modules/
+lib/
+src/contracts/libraries/
+src/contracts/types/
+src/contracts/mocks/
+src/contracts/base/
+src/contracts/interfaces/
+src/test/
