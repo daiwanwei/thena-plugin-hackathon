@@ -13,8 +13,9 @@ import "../../contracts/BasePluginV1Factory.sol";
 import "../../contracts/LimitOrderPlugin.sol";
 import "../../contracts/mocks/TestERC20.sol";
 import "@cryptoalgebra/integral-periphery/contracts/NonfungiblePositionManager.sol";
+import {AlgebraDeployer} from "../../contracts/AlgebraDeployer.sol";
 
-contract BaseTest is Test {
+contract BaseTest is Test, AlgebraDeployer {
     IAlgebraFactory public poolFactory;
     IAlgebraPoolDeployer public poolDeployer;
     BasePluginV1Factory public pluginFactory;
@@ -46,21 +47,21 @@ contract BaseTest is Test {
         (
             address poolDeployerAddress,
             address poolFactoryAddress
-        ) = deployPoolFactory(owner);
+        ) = setupPoolFactory(owner);
         (
             address pluginFactoryAddress,
             address limitOrderPluginAddress
-        ) = deployPlugin(owner, poolFactoryAddress, poolDeployerAddress);
-        (address token0Address, address token1Address) = deployToken(owner);
+        ) = setupPlugin(owner, poolFactoryAddress, poolDeployerAddress);
+        (address token0Address, address token1Address) = setupToken(owner);
         address poolAddress = initializePool(owner, 1 << 96);
         (
             address swapRouterAddress,
             address nftPositionManagerAddress
-        ) = deployPeriphery(owner, poolFactoryAddress, poolDeployerAddress);
+        ) = setupPeriphery(owner, poolFactoryAddress, poolDeployerAddress);
         addInitialLiquidity(owner);
     }
 
-    function deployPoolFactory(
+    function setupPoolFactory(
         address _user
     )
         public
@@ -68,19 +69,20 @@ contract BaseTest is Test {
         returns (address poolDeployerAddress, address poolFactoryAddress)
     {
         uint64 nonce = vm.getNonce(owner);
-        poolDeployerAddress = vm.computeCreateAddress(owner, nonce + 1);
-        AlgebraFactory _poolFactory = new AlgebraFactory(poolDeployerAddress);
-        AlgebraPoolDeployer _poolDeployer = new AlgebraPoolDeployer(
-            address(_poolFactory),
-            _poolFactory.communityVault()
+        address _poolDeployerAddress = vm.computeCreateAddress(
+            owner,
+            nonce + 1
         );
-        assertEq(address(_poolDeployer), poolDeployerAddress);
-        poolFactory = IAlgebraFactory(address(_poolFactory));
-        poolDeployer = IAlgebraPoolDeployer(address(_poolDeployer));
-        return (address(_poolDeployer), address(_poolFactory));
+        (
+            poolFactoryAddress,
+            poolDeployerAddress
+        ) = deployPoolFactoryAndDeployer(_poolDeployerAddress);
+        assertEq(poolDeployerAddress, _poolDeployerAddress);
+        poolFactory = IAlgebraFactory(poolFactoryAddress);
+        poolDeployer = IAlgebraPoolDeployer(poolDeployerAddress);
     }
 
-    function deployPlugin(
+    function setupPlugin(
         address _user,
         address _poolFactory,
         address _poolDeployer
@@ -89,25 +91,16 @@ contract BaseTest is Test {
         with(_user)
         returns (address pluginFactoryAddress, address limitOrderPluginAddress)
     {
-        BasePluginV1Factory _pluginFactory = new BasePluginV1Factory(
-            _poolFactory
-        );
-        LimitOrderPlugin _limitOrderPlugin = new LimitOrderPlugin(
+        (pluginFactoryAddress, limitOrderPluginAddress) = deployPlugin(
             wNativeToken,
-            _poolDeployer,
-            address(_pluginFactory),
-            _poolFactory
+            _poolFactory,
+            _poolDeployer
         );
-        _pluginFactory.setLimitOrderPlugin(address(_limitOrderPlugin));
-        IAlgebraFactory(_poolFactory).setDefaultPluginFactory(
-            address(_pluginFactory)
-        );
-        pluginFactory = BasePluginV1Factory(address(_pluginFactory));
-        limitOrderPlugin = LimitOrderPlugin(address(_limitOrderPlugin));
-        return (address(_pluginFactory), address(_limitOrderPlugin));
+        pluginFactory = BasePluginV1Factory(pluginFactoryAddress);
+        limitOrderPlugin = LimitOrderPlugin(limitOrderPluginAddress);
     }
 
-    function deployToken(
+    function setupToken(
         address _user
     )
         public
@@ -124,7 +117,7 @@ contract BaseTest is Test {
         return (address(token0), address(token1));
     }
 
-    function deployPeriphery(
+    function setupPeriphery(
         address _user,
         address _poolFactory,
         address _poolDeployer
@@ -136,14 +129,14 @@ contract BaseTest is Test {
             address nonfungiblePositionManagerAddress
         )
     {
-        swapRouter = new SwapRouter(_poolFactory, wNativeToken, _poolDeployer);
-        nonfungiblePositionManager = new NonfungiblePositionManager(
-            _poolFactory,
-            wNativeToken,
-            address(0),
-            _poolDeployer
+        (
+            swapRouterAddress,
+            nonfungiblePositionManagerAddress
+        ) = deployPeriphery(wNativeToken, _poolFactory, _poolDeployer);
+        swapRouter = SwapRouter(payable(swapRouterAddress));
+        nonfungiblePositionManager = NonfungiblePositionManager(
+            payable(nonfungiblePositionManagerAddress)
         );
-        return (address(swapRouter), address(nonfungiblePositionManager));
     }
 
     function addInitialLiquidity(

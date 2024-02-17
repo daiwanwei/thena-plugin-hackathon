@@ -14,7 +14,7 @@ import "../contracts/VaultFactory.sol";
 import {IERC4626} from "@openzeppelin/contracts/interfaces/IERC4626.sol";
 
 contract PerpetualTest is BaseTest {
-    Perpetual public perpetual;
+    IPerpetual public perpetual;
     IVaultFactory public vaultFactory;
     IVault public vault;
     IERC20 public collateralToken;
