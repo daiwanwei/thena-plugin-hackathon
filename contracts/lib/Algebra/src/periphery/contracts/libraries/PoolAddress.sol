@@ -7,7 +7,7 @@ import "@cryptoalgebra/integral-core/contracts/AlgebraPool.sol";
 /// @dev Credit to Uniswap Labs under GPL-2.0-or-later license:
 /// https://github.com/Uniswap/v3-periphery
 library PoolAddress {
-    bytes32 internal constant POOL_INIT_CODE_HASH = 0x177d5fbf994f4d130c008797563306f1a168dc689f81b2fa23b4396931014d91;
+    bytes32 internal constant POOL_INIT_CODE_HASH = 0x02c51490a4cb3060161b8f72a62b5d7bfa627491cfd91ccfa78dbaaec7faa935;
 
     /// @notice The identifying key of the pool
     struct PoolKey {
@@ -29,8 +29,6 @@ library PoolAddress {
     /// @param key The PoolKey
     /// @return pool The contract address of the Algebra pool
     function computeAddress(address poolDeployer, PoolKey memory key) internal pure returns (address pool) {
-        require(key.token0 < key.token1, 'Invalid order of tokens');
-        bytes32 poolHash=keccak256(abi.encodePacked(type(AlgebraPool).creationCode));
         pool = address(
             uint160(
                 uint256(
@@ -39,7 +37,7 @@ library PoolAddress {
                             hex'ff',
                             poolDeployer,
                             keccak256(abi.encode(key.token0, key.token1)),
-                            poolHash
+                            POOL_INIT_CODE_HASH
                         )
                     )
                 )
