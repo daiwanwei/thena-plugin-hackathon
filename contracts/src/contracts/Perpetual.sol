@@ -22,7 +22,7 @@ contract Perpetual is IPerpetual {
     using EpochLibrary for Epoch;
     using Math for uint256;
     IAlgebraFactory public algebraFactory;
-    LimitOrderPlugin public limitOrderPlugin;
+    ILimitOrderPlugin public limitOrderPlugin;
     ISwapRouter public swapRouter;
     IVaultFactory public vaultFactory;
     mapping(bytes32 => Position) public positions;
