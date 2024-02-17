@@ -60,6 +60,12 @@ interface ILimitOrderPlugin is IAlgebraMintCallback {
         address to
     ) external returns (uint256 amount0, uint256 amount1);
 
+    function withdraw(
+        Epoch epoch,
+        address to,
+        uint128 liquidityDelta
+    ) external returns (uint256 amount0, uint256 amount1);
+
     function afterSwap(address pool, bool zeroToOne, int24 tick) external;
 
     function afterInitialize(address pool, int24 tick) external;
@@ -71,5 +77,7 @@ interface ILimitOrderPlugin is IAlgebraMintCallback {
         int24 tickLower,
         int24 tickUpper,
         bool zeroForOne
-    ) external returns (Epoch);
+    ) external view returns (Epoch);
+
+    function isFilled(Epoch epoch) external view returns (bool);
 }

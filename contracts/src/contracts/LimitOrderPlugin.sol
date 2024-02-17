@@ -457,14 +457,7 @@ contract LimitOrderPlugin is ILimitOrderPlugin, LimitOrderPayments {
         tickLowerLasts[pool] = getTickLower(tickLower, tickSpacing);
     }
 
-    function getEpochTokenTotal(
-        Epoch epoch
-    ) external view returns (uint128 token0Total, uint128 token1Total) {
-        token0Total = epochInfos[epoch].token0Total;
-        token1Total = epochInfos[epoch].token1Total;
-    }
-
-    function isFilled(Epoch epoch) external view returns (bool) {
+    function isFilled(Epoch epoch) public view returns (bool) {
         return epochInfos[epoch].filled;
     }
 }
