@@ -11,9 +11,9 @@ contract VaultFactory is IVaultFactory {
     IAlgebraFactory public poolFactory;
     ISwapRouter public swapRouter;
 
-    constructor(IAlgebraFactory _factory, ISwapRouter _swapRouter) {
-        poolFactory = _factory;
-        swapRouter = _swapRouter;
+    constructor(address _factory, address _swapRouter) {
+        poolFactory = IAlgebraFactory(_factory);
+        swapRouter = ISwapRouter(_swapRouter);
     }
 
     function createVault(

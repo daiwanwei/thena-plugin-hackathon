@@ -14,30 +14,24 @@ import "../contracts/VaultFactory.sol";
 import {IERC4626} from "@openzeppelin/contracts/interfaces/IERC4626.sol";
 
 contract PerpetualTest is BaseTest {
-    IPerpetual public perpetual;
-    IVaultFactory public vaultFactory;
     IVault public vault;
     IERC20 public collateralToken;
     IERC20 public indexToken;
     function setUp() public {
-        vaultFactory = new VaultFactory(poolFactory, swapRouter);
         collateralToken = token0;
         indexToken = token1;
+        (string memory _name, string memory _symbol) = getVaultMetadata(
+            address(indexToken)
+        );
         vault = IVault(
-            vaultFactory.createVault(
-                "TestVault",
-                "TV",
+            createVault(
+                address(vaultFactory),
                 address(indexToken),
-                address(collateralToken)
+                address(collateralToken),
+                _name,
+                _symbol
             )
         );
-        perpetual = new Perpetual(
-            address(poolFactory),
-            address(limitOrderPlugin),
-            address(swapRouter),
-            address(vaultFactory)
-        );
-
         depositToVault(owner, 1 ether);
     }
 
@@ -161,10 +155,6 @@ contract PerpetualTest is BaseTest {
     }
 
     function depositToVault(address _user, uint256 _amount) public with(_user) {
-        if (indexToken.balanceOf(_user) < _amount) {
-            revert("insufficient balance");
-        }
-        indexToken.approve(address(vault), _amount);
-        IERC4626(address(vault)).deposit(_amount, _user);
+        depositToVault(address(vault), address(indexToken), _user, _amount);
     }
 }

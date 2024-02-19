@@ -7,7 +7,7 @@ import "./interfaces/ILimitOrderPlugin.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {LiquidityMath} from "@cryptoalgebra/integral-core/contracts/libraries/LiquidityMath.sol";
 import {TickMath} from "@cryptoalgebra/integral-core/contracts/libraries/TickMath.sol";
-import {PositionKey} from "./libraries/PositionKey.sol";
+import {PositionKey2} from "./libraries/PositionKey2.sol";
 import {LiquidityAmounts} from "@cryptoalgebra/integral-periphery/contracts/libraries/LiquidityAmounts.sol";
 import {Epoch, EpochLibrary} from "./libraries/EpochLibrary.sol";
 import "./LimitOrderPlugin.sol";
@@ -370,7 +370,7 @@ contract Perpetual is IPerpetual {
         address _indexToken,
         bool _isLong
     ) private {
-        bytes32 positionKey = PositionKey.getPositionKey(
+        bytes32 positionKey = PositionKey2.getPositionKey(
             _account,
             _collateralToken,
             _indexToken,
@@ -431,7 +431,7 @@ contract Perpetual is IPerpetual {
         address _indexToken,
         bool _isLong
     ) public view returns (Position memory) {
-        bytes32 positionKey = PositionKey.getPositionKey(
+        bytes32 positionKey = PositionKey2.getPositionKey(
             _account,
             _collateralToken,
             _indexToken,
@@ -502,7 +502,7 @@ contract Perpetual is IPerpetual {
         address _indexToken,
         bool _isLong
     ) private returns (Position storage) {
-        bytes32 positionKey = PositionKey.getPositionKey(
+        bytes32 positionKey = PositionKey2.getPositionKey(
             _account,
             _collateralToken,
             _indexToken,

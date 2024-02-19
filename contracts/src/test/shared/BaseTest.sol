@@ -14,8 +14,19 @@ import "../../contracts/LimitOrderPlugin.sol";
 import "../../contracts/mocks/TestERC20.sol";
 import "@cryptoalgebra/integral-periphery/contracts/NonfungiblePositionManager.sol";
 import {AlgebraDeployer} from "../../contracts/AlgebraDeployer.sol";
+import "../../contracts/AlgebraScript.sol";
+import "../../contracts/PerpetualDeployer.sol";
+import "../../contracts/interfaces/IPerpetual.sol";
+import "../../contracts/interfaces/IVaultFactory.sol";
+import {PerpetualScript} from "../../contracts/PerpetualScript.sol";
 
-contract BaseTest is Test, AlgebraDeployer {
+contract BaseTest is
+    Test,
+    AlgebraDeployer,
+    AlgebraScript,
+    PerpetualDeployer,
+    PerpetualScript
+{
     IAlgebraFactory public poolFactory;
     IAlgebraPoolDeployer public poolDeployer;
     BasePluginV1Factory public pluginFactory;
@@ -23,6 +34,8 @@ contract BaseTest is Test, AlgebraDeployer {
     SwapRouter public swapRouter;
     LimitOrderPlugin public limitOrderPlugin;
     NonfungiblePositionManager nonfungiblePositionManager;
+    IPerpetual public perpetual;
+    IVaultFactory public vaultFactory;
     TestERC20 public token0;
     TestERC20 public token1;
     address public wNativeToken;
@@ -30,7 +43,6 @@ contract BaseTest is Test, AlgebraDeployer {
     address public user1;
     address public user2;
     address public user3;
-    //    address public vault;
 
     modifier with(address user) {
         vm.startPrank(user);
@@ -53,12 +65,22 @@ contract BaseTest is Test, AlgebraDeployer {
             address limitOrderPluginAddress
         ) = setupPlugin(owner, poolFactoryAddress, poolDeployerAddress);
         (address token0Address, address token1Address) = setupToken(owner);
-        address poolAddress = initializePool(owner, 1 << 96);
+        address poolAddress = setupPool(owner, 1 << 96);
         (
             address swapRouterAddress,
             address nftPositionManagerAddress
         ) = setupPeriphery(owner, poolFactoryAddress, poolDeployerAddress);
-        addInitialLiquidity(owner);
+        setupInitialLiquidity(owner);
+        (
+            address _vaultFactory,
+            address _perpetual
+        ) = deployVaultFactoryAndPerpetual(
+                address(poolFactory),
+                address(swapRouter),
+                address(limitOrderPlugin)
+            );
+        vaultFactory = IVaultFactory(_vaultFactory);
+        perpetual = IPerpetual(_perpetual);
     }
 
     function setupPoolFactory(
@@ -139,45 +161,8 @@ contract BaseTest is Test, AlgebraDeployer {
         );
     }
 
-    function addInitialLiquidity(
+    function setupInitialLiquidity(
         address _user
-    )
-        public
-        returns (
-            uint256 tokenId,
-            uint128 liquidity,
-            uint256 amount0,
-            uint256 amount1
-        )
-    {
-        INonfungiblePositionManager.MintParams
-            memory mintParams = INonfungiblePositionManager.MintParams({
-                token0: address(token0),
-                token1: address(token1),
-                tickLower: -887220,
-                tickUpper: 887220,
-                amount0Desired: 1000000000000000000,
-                amount1Desired: 1000000000000000000,
-                amount0Min: 0,
-                amount1Min: 0,
-                recipient: _user,
-                deadline: block.timestamp + 1000
-            });
-        (tokenId, liquidity, amount0, amount1) = mint(_user, mintParams);
-    }
-
-    function initializePool(
-        address _user,
-        uint160 initialPrice
-    ) public with(_user) returns (address poolAddress) {
-        poolAddress = poolFactory.createPool(address(token0), address(token1));
-        pool = IAlgebraPool(poolAddress);
-        pool.initialize(initialPrice);
-    }
-
-    function mint(
-        address _user,
-        INonfungiblePositionManager.MintParams memory _mintParams
     )
         public
         with(_user)
@@ -188,10 +173,30 @@ contract BaseTest is Test, AlgebraDeployer {
             uint256 amount1
         )
     {
-        token0.approve(address(nonfungiblePositionManager), type(uint256).max);
-        token1.approve(address(nonfungiblePositionManager), type(uint256).max);
-        (tokenId, liquidity, amount0, amount1) = nonfungiblePositionManager
-            .mint(_mintParams);
+        return
+            mintPosition(
+                address(nonfungiblePositionManager),
+                address(token0),
+                address(token1),
+                1000000000000000000,
+                1000000000000000000,
+                -887220,
+                887220,
+                _user
+            );
+    }
+
+    function setupPool(
+        address _user,
+        uint160 initialPrice
+    ) public with(_user) returns (address poolAddress) {
+        poolAddress = createPool(
+            address(poolFactory),
+            address(token0),
+            address(token1),
+            initialPrice
+        );
+        pool = IAlgebraPool(poolAddress);
     }
 
     function swap(
