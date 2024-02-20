@@ -12,31 +12,38 @@ export default defineConfig({
   contracts: [
     {
       name: 'vault',
+      //@ts-ignore
       abi: VAULT_ABI,
     },
     {
       name: 'erc20',
+      //@ts-ignore
       abi: ERC20_ABI,
     },
     {
       name: 'swapRouter',
+      //@ts-ignore
       abi: SWAP_ROUTER_ABI,
     },
     {
       name: 'vaultFactory',
+      //@ts-ignore
       abi: VAULT_FACTORY_ABI,
     },
     {
-        name: 'perpetual',
-        abi: PERPETUAL_ABI,
+      name: 'perpetual',
+      //@ts-ignore
+      abi: PERPETUAL_ABI,
     },
     {
-        name: 'algebraFactory',
-        abi: ALGEBRA_FACTORY_ABI,
+      name: 'algebraFactory',
+      //@ts-ignore
+      abi: ALGEBRA_FACTORY_ABI,
     },
     {
-        name: 'algebraPool',
-        abi: ALGEBRA_POOL_ABI,
+      name: 'algebraPool',
+      //@ts-ignore
+      abi: ALGEBRA_POOL_ABI,
     },
   ],
   plugins: [
