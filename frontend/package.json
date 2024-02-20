@@ -1,0 +1,40 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "generate": "wagmi generate"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^5.3.0",
+    "@ant-design/nextjs-registry": "^1.0.0",
+    "@rainbow-me/rainbowkit": "^2.0.0",
+    "@tanstack/react-query": "^5.20.5",
+    "@wagmi/connectors": "^4.1.14",
+    "@wagmi/core": "^2.6.5",
+    "antd": "^5.14.1",
+    "bignumber.js": "^9.1.2",
+    "decimal.js": "^10.4.3",
+    "next": "14.1.0",
+    "react": "^18",
+    "react-dom": "^18",
+    "viem": "~2.7.9",
+    "wagmi": "^2.5.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@wagmi/cli": "^2.1.1",
+    "autoprefixer": "^10.0.1",
+    "eslint": "^8",
+    "eslint-config-next": "14.1.0",
+    "postcss": "^8",
+    "tailwindcss": "^3.3.0",
+    "typescript": "^5"
+  }
+}
