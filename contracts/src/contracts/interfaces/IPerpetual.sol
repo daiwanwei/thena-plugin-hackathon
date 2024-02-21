@@ -27,6 +27,8 @@ interface IPerpetual {
         int24 tick;
         Epoch epoch;
         int256 realisedPnl;
+        uint160 entryPrice;
+        uint160 takeProfitPrice;
     }
 
     struct SwapCallbackData {

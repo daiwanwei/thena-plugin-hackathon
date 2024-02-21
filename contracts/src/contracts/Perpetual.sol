@@ -52,12 +52,15 @@ contract Perpetual is IPerpetual {
             _params.indexToken,
             _params.isLong
         );
-        validatePositionPrice(
-            _params.collateralToken,
-            _params.indexToken,
-            _params.isLong,
-            _tickLower
-        );
+        (
+            uint160 _entryPrice,
+            uint160 _takeProfitPrice
+        ) = getEntryAndTakeProfitPrice(
+                _params.collateralToken,
+                _params.indexToken,
+                _tickLower
+            );
+        validatePositionPrice(_entryPrice, _takeProfitPrice, _isToken0Long);
         _deposit(_params.collateralToken, msg.sender, _params.collateralAmount);
         _borrow(
             msg.sender,
@@ -89,6 +92,7 @@ contract Perpetual is IPerpetual {
             _tickLower,
             _isToken0Long
         );
+
         _updatePosition(
             msg.sender,
             _params.collateralToken,
@@ -98,6 +102,7 @@ contract Perpetual is IPerpetual {
             _params.collateralAmount,
             _params.indexAmount,
             liquidityDelta,
+            _entryPrice,
             _tickLower,
             epoch,
             true
@@ -153,6 +158,7 @@ contract Perpetual is IPerpetual {
             position.collateralAmount,
             position.debt,
             position.liquidity,
+            position.entryPrice,
             position.tick,
             position.epoch,
             false
@@ -233,6 +239,7 @@ contract Perpetual is IPerpetual {
         uint256 _collateralDelta,
         uint256 _debtDelta,
         uint160 _liquidityDelta,
+        uint160 _entryPrice,
         int24 _tickLower,
         Epoch _epoch,
         bool _isIncrease
@@ -243,6 +250,8 @@ contract Perpetual is IPerpetual {
             _indexToken,
             _isLong
         );
+        position.entryPrice = _entryPrice;
+        position.takeProfitPrice = TickMath.getSqrtRatioAtTick(_tickLower);
         position.tick = _tickLower;
         position.epoch = _epoch;
         if (_isIncrease) {
@@ -448,26 +457,17 @@ contract Perpetual is IPerpetual {
     }
 
     function validatePositionPrice(
-        address _collateralToken,
-        address _indexToken,
-        bool _isLong,
-        int24 _tickLower
+        uint160 _entryPrice,
+        uint160 _takeProfitPrice,
+        bool _isToken0Long
     ) public view {
-        IAlgebraPool pool = getPool(_collateralToken, _indexToken);
-        (uint160 _sqrtPriceX96, , , , , , ) = pool.safelyGetStateOfAMM();
-        bool _isToken0Long = isToken0Long(
-            _collateralToken,
-            _indexToken,
-            _isLong
-        );
-        uint160 _positionPrice = TickMath.getSqrtRatioAtTick(_tickLower);
         if (_isToken0Long) {
-            if (_sqrtPriceX96 > _positionPrice) {
-                revert InvalidPositionPrice(_sqrtPriceX96, _positionPrice);
+            if (_entryPrice > _takeProfitPrice) {
+                revert InvalidPositionPrice(_entryPrice, _takeProfitPrice);
             }
         } else {
-            if (_sqrtPriceX96 < _positionPrice) {
-                revert InvalidPositionPrice(_sqrtPriceX96, _positionPrice);
+            if (_entryPrice < _takeProfitPrice) {
+                revert InvalidPositionPrice(_entryPrice, _takeProfitPrice);
             }
         }
     }
@@ -520,5 +520,15 @@ contract Perpetual is IPerpetual {
             vaultFactory.vaults(_indexToken, _collateralToken)
         );
         (, collateralValue, debtValue) = vault.getPosition(_user);
+    }
+
+    function getEntryAndTakeProfitPrice(
+        address _collateralToken,
+        address _indexToken,
+        int24 _tickLower
+    ) public view returns (uint160 entryPrice, uint160 takeProfitPrice) {
+        IAlgebraPool pool = getPool(_collateralToken, _indexToken);
+        (entryPrice, , , , , , ) = pool.safelyGetStateOfAMM();
+        takeProfitPrice = TickMath.getSqrtRatioAtTick(_tickLower);
     }
 }
