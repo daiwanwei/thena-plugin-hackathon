@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 import "./interfaces/IVaultFactory.sol";
+import "./interfaces/IPerpetual.sol";
 import "@openzeppelin/contracts/interfaces/IERC4626.sol";
 contract PerpetualScript {
     function createVault(
@@ -33,9 +34,34 @@ contract PerpetualScript {
         IERC4626(_vault).deposit(_amount, _receiver);
     }
 
-    function getVaultMetadata(address _asset) public returns(string memory name,string memory symbol){
-        IERC20Metadata asset= IERC20Metadata(_asset);
+    function getVaultMetadata(
+        address _asset
+    ) public returns (string memory name, string memory symbol) {
+        IERC20Metadata asset = IERC20Metadata(_asset);
         name = string.concat("Perpetual ", asset.name());
         symbol = string.concat("p", asset.symbol());
+    }
+
+    function increasePosition(
+        address _perpetual,
+        address _collateralToken,
+        address _indexToken,
+        int24 _tickLower,
+        bool _isLong,
+        uint256 _collateralAmount,
+        uint256 _indexAmount
+    ) public {
+        IERC20Metadata collateralToken = IERC20Metadata(_collateralToken);
+        collateralToken.approve(_perpetual, _collateralAmount);
+        IPerpetual(_perpetual).increasePosition(
+            IPerpetual.IncreasePositionParams({
+                collateralToken: _collateralToken,
+                indexToken: _indexToken,
+                tickLower: _tickLower,
+                isLong: _isLong,
+                collateralAmount: _collateralAmount,
+                indexAmount: _indexAmount
+            })
+        );
     }
 }

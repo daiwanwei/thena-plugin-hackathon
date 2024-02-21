@@ -9,12 +9,12 @@ import "@cryptoalgebra/integral-core/contracts/AlgebraPoolDeployer.sol";
 import "../src/contracts/AlgebraDeployer.sol";
 import {PerpetualDeployer} from "../src/contracts/PerpetualDeployer.sol";
 
-contract DeploymentScript is Script, AlgebraDeployer,PerpetualDeployer {
+contract DeploymentScript is Script, AlgebraDeployer, PerpetualDeployer {
     function deployTokens() public returns (address token0, address token1) {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
+        TestERC20 tokenB = new TestERC20("WBNB", "WBNB", 1e18 ether);
         TestERC20 tokenA = new TestERC20("USDC", "USDC", 1e18 ether);
-        TestERC20 tokenB = new TestERC20("BNB", "BNB", 1e18 ether);
         vm.label(address(tokenA), "USDC");
         vm.label(address(tokenB), "BNB");
         token0 = address(tokenA) < address(tokenB)
@@ -68,11 +68,14 @@ contract DeploymentScript is Script, AlgebraDeployer,PerpetualDeployer {
         address _poolFactory,
         address _swapRouter,
         address _limitOrderPlugin
-    ) public returns (address vaultFactoryAddress,address perpetualAddress) {
+    ) public returns (address vaultFactoryAddress, address perpetualAddress) {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
         address _deployer = vm.addr(deployerPrivateKey);
-        (vaultFactoryAddress,perpetualAddress) = deployVaultFactoryAndPerpetual(
+        (
+            vaultFactoryAddress,
+            perpetualAddress
+        ) = deployVaultFactoryAndPerpetual(
             _poolFactory,
             _swapRouter,
             _limitOrderPlugin

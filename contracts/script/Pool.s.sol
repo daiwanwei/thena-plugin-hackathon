@@ -19,4 +19,23 @@ contract PoolScript is Script, AlgebraScript {
         vm.startBroadcast(deployerPrivateKey);
         poolAddress = createPool(_poolFactory, _token0, _token1, _initialPrice);
     }
+
+    function initializeLiquidity(
+        address _positionManager,
+        address _token0,
+        address _token1
+    ) public {
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        vm.startBroadcast(deployerPrivateKey);
+        mintPosition(
+            _positionManager,
+            _token0,
+            _token1,
+            1000000000000000000,
+            1000000000000000000,
+            -887220,
+            887220,
+            vm.addr(deployerPrivateKey)
+        );
+    }
 }

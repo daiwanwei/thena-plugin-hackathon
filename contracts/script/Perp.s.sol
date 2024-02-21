@@ -9,7 +9,7 @@ import "@cryptoalgebra/integral-core/contracts/AlgebraPoolDeployer.sol";
 import {AlgebraScript} from "../src/contracts/AlgebraScript.sol";
 import {PerpetualScript} from "../src/contracts/PerpetualScript.sol";
 
-contract PerpScript is Script, AlgebraScript,PerpetualScript {
+contract PerpScript is Script, AlgebraScript, PerpetualScript {
     function createAndInitializeVault(
         address _vaultFactory,
         address _asset,
@@ -18,10 +18,17 @@ contract PerpScript is Script, AlgebraScript,PerpetualScript {
     ) public returns (address vaultAddress) {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
-        address deployer=vm.addr(deployerPrivateKey);
+        address deployer = vm.addr(deployerPrivateKey);
         (string memory name, string memory symbol) = getVaultMetadata(_asset);
-        vaultAddress= createVault(_vaultFactory, _asset, _collateral,name,symbol);
+        vaultAddress = createVault(
+            _vaultFactory,
+            _asset,
+            _collateral,
+            name,
+            symbol
+        );
         depositToVault(vaultAddress, _asset, deployer, _amount);
+        vm.label(vaultAddress, "Vault");
     }
 
     function depositAssetToVault(
@@ -33,5 +40,27 @@ contract PerpScript is Script, AlgebraScript,PerpetualScript {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
         depositToVault(_vault, _asset, _receiver, _amount);
+    }
+
+    function openPosition(
+        address _perpetual,
+        address _collateral,
+        address _index,
+        int24 _tickLower,
+        //        bool _isLong,
+        uint256 _collateralAmount,
+        uint256 _indexAmount
+    ) public {
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        vm.startBroadcast(deployerPrivateKey);
+        increasePosition(
+            _perpetual,
+            _collateral,
+            _index,
+            _tickLower,
+            true,
+            _collateralAmount,
+            _indexAmount
+        );
     }
 }
