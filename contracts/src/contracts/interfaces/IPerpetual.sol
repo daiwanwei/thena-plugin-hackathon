@@ -19,6 +19,12 @@ interface IPerpetual {
         bool isLong;
     }
 
+    struct KillPositionParams {
+        address collateralToken;
+        address indexToken;
+        bool isLong;
+    }
+
     struct Position {
         uint256 size;
         uint256 collateralAmount;
@@ -76,6 +82,10 @@ interface IPerpetual {
     function decreasePosition(
         DecreasePositionParams calldata _params
     ) external returns (uint128 liquidityDelta, uint256 sizeDelta);
+
+    function killPosition(
+        KillPositionParams calldata _params
+    ) external returns (uint256 collateralDelta, uint256 indexDelta);
 
     function getPosition(
         address _account,

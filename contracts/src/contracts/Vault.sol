@@ -48,29 +48,51 @@ contract Vault is ERC4626, IVault {
         if (assetBalance() < _params.debtDelta) {
             revert InsufficientBalance();
         }
-        collateralToken.transferFrom(
-            _msgSender(),
-            address(this),
-            _params.collateralDelta
-        );
-        totalCollateral += _params.collateralDelta;
-        totalDebt += _params.debtDelta;
-        Position storage position = positions[_params.user];
-        if (position.debt == 0) {
-            position.collateral = _params.collateralDelta;
-            position.price = PoolUtil.getPoolPrice(pool);
-        }
-        position.collateral += _params.collateralDelta;
+        _pay(_msgSender(), _params.user, _params.collateralDelta);
         _borrow(_params.user, _params.recipient, _params.debtDelta);
     }
 
     function decreasePosition(DecreasePositionParams memory _params) public {
-        Position storage position = positions[_params.user];
+        Position memory position = positions[_params.user];
         if (position.collateral < _params.collateralDelta) {
             revert InsufficientBalance();
         }
         _refund(_params.user, _params.user, _params.collateralDelta);
         _repay(_params.payer, _params.user, _params.debtDelta);
+    }
+
+    function killPosition(KillPositionParams memory _params) public returns (uint256 collateralForRefund) {
+        Position memory position = positions[_params.user];
+        if (position.debt < _params.debtDelta) {
+            revert("InvalidDebtDelta");
+        }
+        uint256 debtForLiquidation = position.debt - _params.debtDelta;
+        _repay(_params.payer, _params.user, _params.debtDelta);
+        if (debtForLiquidation > 0) {
+            uint256 collateralDelta = _liquidate(
+                _params.user,
+                debtForLiquidation
+            );
+            collateralForRefund = position.collateral - collateralDelta;
+            _refund(_params.user, _params.user, collateralForRefund);
+        } else {
+            collateralForRefund = position.collateral;
+            _refund(_params.user, _params.user, collateralForRefund);
+        }
+        if (collateralForRefund<0) {
+            revert("invalid collateral for refund");
+//            revert InsufficientBalance();
+        }
+    }
+
+    function _pay(address _payer, address _suppler, uint256 _amount) private {
+        if (collateralToken.balanceOf(_payer) < _amount) {
+            revert InsufficientBalance();
+        }
+        collateralToken.transferFrom(_payer, address(this), _amount);
+        Position storage position = positions[_suppler];
+        position.collateral += _amount;
+        totalCollateral += _amount;
     }
 
     function _borrow(
@@ -116,6 +138,33 @@ contract Vault is ERC4626, IVault {
         collateralToken.transfer(_recipient, _amount);
         position.collateral -= _amount;
         totalCollateral -= _amount;
+    }
+
+    function _liquidate(
+        address _borrower,
+        uint256 _debtDelta
+    ) private returns (uint256 collateralDelta) {
+        Position storage position = positions[_borrower];
+        if (position.debt < _debtDelta) {
+            revert InsufficientBalance();
+        }
+        collateralToken.approve(address(swapRouter), type(uint256).max);
+        ISwapRouter.ExactOutputSingleParams memory params = ISwapRouter
+            .ExactOutputSingleParams({
+                tokenIn: address(collateralToken),
+                tokenOut: address(asset()),
+                recipient: address(this),
+                deadline: block.timestamp + 60,
+                amountOut: _debtDelta,
+                amountInMaximum: type(uint256).max,
+                limitSqrtPrice: 0
+            });
+
+        collateralDelta = swapRouter.exactOutputSingle(params);
+        position.debt -= _debtDelta;
+        totalDebt -= _debtDelta;
+        position.collateral -= collateralDelta;
+        totalCollateral -= collateralDelta;
     }
 
     function totalAssets() public view override returns (uint256) {

@@ -15,8 +15,6 @@ import "../contracts/interfaces/IVault.sol";
 import "../contracts/interfaces/IVaultFactory.sol";
 import "@openzeppelin/contracts/interfaces/IERC4626.sol";
 
-
-
 contract VaultTest is BaseTest {
     IVault public vault;
     IERC20 public collateralToken;
@@ -60,7 +58,7 @@ contract VaultTest is BaseTest {
     }
 
     function test_PrintPrice() public {
-        uint256 price=1<<96;
-        console2.log("price: %s",price);
+        uint256 price = 1 << 96;
+        console2.log("price: %s", price);
     }
 }

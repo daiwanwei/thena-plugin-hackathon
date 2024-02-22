@@ -69,8 +69,6 @@ contract Perpetual is IPerpetual {
             _params.collateralAmount,
             _params.indexAmount
         );
-        IERC20 indexToken = IERC20(_params.indexToken);
-        indexToken.approve(address(swapRouter), _params.indexAmount);
         sizeDelta = _swap(
             _params.indexToken,
             _params.collateralToken,
@@ -121,7 +119,7 @@ contract Perpetual is IPerpetual {
             _isLong
         );
 
-        Position storage position = _getPosition(
+        Position memory position = _getPosition(
             msg.sender,
             _collateralToken,
             _indexToken,
@@ -163,6 +161,85 @@ contract Perpetual is IPerpetual {
             position.epoch,
             false
         );
+        _removePosition(msg.sender, _collateralToken, _indexToken, _isLong);
+    }
+
+    function killPosition(
+        KillPositionParams calldata _params
+    ) public returns (uint256 collateralDelta, uint256 indexDelta) {
+        address _collateralToken = _params.collateralToken;
+        address _indexToken = _params.indexToken;
+        bool _isLong = _params.isLong;
+        bool _isToken0Long = isToken0Long(
+            _collateralToken,
+            _indexToken,
+            _isLong
+        );
+
+        Position memory position = _getPosition(
+            msg.sender,
+            _collateralToken,
+            _indexToken,
+            _isLong
+        );
+
+        if (position.liquidity <= 0) {
+            revert PositionNotFound();
+        }
+
+        (uint256 amount0,uint256 amount1) = _killOrder(
+            _collateralToken,
+            _indexToken,
+            position.tick,
+            _isToken0Long,
+            uint160(position.liquidity)
+        );
+
+        uint256 indexAmount = _isToken0Long ? amount1 : amount0;
+        uint256 collateralAmount = _isToken0Long ? amount0 : amount1;
+
+        uint256 indexForRepay=_swap(
+            _collateralToken,
+            _indexToken,
+            collateralAmount,
+            0,
+            address(swapRouter)
+        )+indexAmount;
+
+        if (indexForRepay > position.debt) {
+            collateralDelta = position.collateralAmount;
+            indexDelta = indexForRepay - position.debt;
+            _repay(
+                msg.sender,
+                _collateralToken,
+                _indexToken,
+                position.collateralAmount,
+                position.debt
+            );
+            _refund(_indexToken, msg.sender, indexDelta);
+        }else{
+            indexDelta=0;
+            collateralDelta=_kill(
+                msg.sender,
+                _collateralToken,
+                _indexToken,
+                indexForRepay
+            );
+        }
+//        _updatePosition(
+//            msg.sender,
+//            _collateralToken,
+//            _indexToken,
+//            _isLong,
+//            position.size,
+//            position.collateralAmount,
+//            position.debt,
+//            position.liquidity,
+//            position.entryPrice,
+//            position.tick,
+//            position.epoch,
+//            false
+//        );
         _removePosition(msg.sender, _collateralToken, _indexToken, _isLong);
     }
 
@@ -208,6 +285,31 @@ contract Perpetual is IPerpetual {
             address(this),
             _liquidity
         );
+    }
+
+    function _killOrder(
+        address _token0,
+        address _token1,
+        int24 _tickLower,
+        bool _isToken0Long,
+        uint160 _liquidityDelta
+    ) private returns (uint256 amount0, uint256 amount1) {
+        IAlgebraPool pool = getPool(_token0, _token1);
+        int24 _tickSpacing = pool.tickSpacing();
+        bool _zeroForOne = _isToken0Long;
+        ILimitOrderPlugin.KillParams memory params = ILimitOrderPlugin
+            .KillParams({
+                poolKey: PoolAddress.PoolKey({
+                    token0: _token0,
+                    token1: _token1
+                }),
+                tickLower: _tickLower,
+                tickUpper: _tickLower + _tickSpacing,
+                zeroForOne: _zeroForOne,
+                to: address(this),
+                liquidityDelta: uint128(_liquidityDelta)
+            });
+        (amount0, amount1) = limitOrderPlugin.kill(params);
     }
 
     function _deposit(address _token, address _payer, uint256 _amount) private {
@@ -296,6 +398,8 @@ contract Perpetual is IPerpetual {
         uint256 amountOutMinimum,
         address _swapRouter
     ) private returns (uint256 amountOut) {
+        IERC20 indexToken = IERC20(tokenIn);
+        indexToken.approve(address(swapRouter), amountIn);
         ISwapRouter.ExactInputSingleParams memory params = ISwapRouter
             .ExactInputSingleParams({
                 tokenIn: tokenIn,
@@ -368,6 +472,38 @@ contract Perpetual is IPerpetual {
                 user: _user,
                 payer: address(this),
                 collateralDelta: _collateralDelta,
+                debtDelta: _debtDelta
+            })
+        );
+    }
+
+    function _kill(
+        address _user,
+        address _collateralToken,
+        address _indexToken,
+        uint256 _debtDelta
+    ) private returns (uint256 collateralDelta) {
+        IVault vault = IVault(
+            vaultFactory.vaults(_indexToken, _collateralToken)
+        );
+        if (address(vault) == address(0)) {
+            revert VaultNotExists();
+        }
+
+        (uint256 _collateral, uint256 _debt) = _getPositionFromVault(
+            _user,
+            _collateralToken,
+            _indexToken
+        );
+
+        if (_debt < _debtDelta) {
+            revert InvalidDebtDelta(_debt, _debtDelta);
+        }
+        IERC20(_indexToken).approve(address(vault), _debtDelta);
+        collateralDelta=vault.killPosition(
+            IVault.KillPositionParams({
+                payer: address(this),
+                user: _user,
                 debtDelta: _debtDelta
             })
         );

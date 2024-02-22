@@ -7,6 +7,15 @@ import "@cryptoalgebra/integral-core/contracts/interfaces/callback/IAlgebraMintC
 import "../libraries/EpochLibrary.sol";
 
 interface ILimitOrderPlugin is IAlgebraMintCallback {
+    struct KillParams {
+        PoolAddress.PoolKey poolKey;
+        int24 tickLower;
+        int24 tickUpper;
+        bool zeroForOne;
+        address to;
+        uint128 liquidityDelta;
+    }
+
     error InsufficientLiquidity();
     error ZeroLiquidity();
     error InRange();
@@ -53,6 +62,10 @@ interface ILimitOrderPlugin is IAlgebraMintCallback {
         int24 tickUpper,
         bool zeroForOne,
         address to
+    ) external returns (uint256 amount0, uint256 amount1);
+
+    function kill(
+        KillParams memory params
     ) external returns (uint256 amount0, uint256 amount1);
 
     function withdraw(

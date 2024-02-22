@@ -340,6 +340,84 @@ contract LimitOrderPlugin is ILimitOrderPlugin, LimitOrderPayments {
         emit Kill(msg.sender, epoch, tickLower, zeroForOne, liquidity);
     }
 
+    function kill(
+        KillParams calldata _params
+    ) external override returns (uint256 amount0, uint256 amount1) {
+        address pool = PoolAddress.computeAddress(
+            poolDeployer,
+            _params.poolKey
+        );
+
+        Epoch epoch = getEpoch(
+            pool,
+            _params.tickLower,
+            _params.tickUpper,
+            _params.zeroForOne
+        );
+        EpochInfo storage epochInfo = epochInfos[epoch];
+
+        if (epochInfo.filled) revert Filled();
+
+        uint128 liquidity = epochInfo.liquidity[msg.sender];
+        uint128 liquidityTotal = epochInfo.liquidityTotal;
+        if (liquidity < _params.liquidityDelta) revert InsufficientLiquidity();
+        if (liquidity == 0) revert ZeroLiquidity();
+        if (liquidity == _params.liquidityDelta) {
+            delete epochInfo.liquidity[msg.sender];
+        } else {
+            epochInfo.liquidity[msg.sender] =
+                liquidity -
+                _params.liquidityDelta;
+        }
+        epochInfo.liquidityTotal = liquidityTotal - _params.liquidityDelta;
+
+        // when the all liquidity of the position is taken, fees is sent to the pool
+        (uint256 amount0Fee, uint256 amount1Fee) = IAlgebraPool(pool).burn(
+            _params.tickLower,
+            _params.tickUpper,
+            0,
+            ""
+        );
+        if (liquidityTotal - liquidity == 0) {
+            IAlgebraPool(pool).collect(
+                pool,
+                _params.tickLower,
+                _params.tickUpper,
+                uint128(amount0Fee) + epochInfo.token0Total - 1,
+                uint128(amount1Fee) + epochInfo.token1Total
+            );
+            epochInfo.token0Total = 0;
+            epochInfo.token1Total = 0;
+        } else {
+            epochInfo.token0Total += uint128(amount0Fee);
+            epochInfo.token1Total += uint128(amount1Fee);
+        }
+
+        (amount0, amount1) = IAlgebraPool(pool).burn(
+            _params.tickLower,
+            _params.tickUpper,
+            _params.liquidityDelta,
+            ""
+        );
+        IAlgebraPool(pool).collect(
+            address(this),
+            _params.tickLower,
+            _params.tickUpper,
+            uint128(amount0),
+            uint128(amount1)
+        );
+
+        claimTo(_params.poolKey, _params.to);
+
+        emit Kill(
+            msg.sender,
+            epoch,
+            _params.tickLower,
+            _params.zeroForOne,
+            _params.liquidityDelta
+        );
+    }
+
     function withdraw(
         Epoch epoch,
         address to
@@ -398,21 +476,24 @@ contract LimitOrderPlugin is ILimitOrderPlugin, LimitOrderPayments {
         if (!epochInfo.filled) revert NotFilled();
 
         uint128 liquidity = epochInfo.liquidity[msg.sender];
+        uint128 liquidityTotal = epochInfo.liquidityTotal;
         if (liquidity < liquidityDelta) revert InsufficientLiquidity();
         if (liquidity == 0) revert ZeroLiquidity();
-        delete epochInfo.liquidity[msg.sender];
+        if (liquidity == liquidityDelta) {
+            delete epochInfo.liquidity[msg.sender];
+        } else {
+            epochInfo.liquidity[msg.sender] = liquidity - liquidityDelta;
+        }
+        epochInfo.liquidityTotal = liquidityTotal - liquidityDelta;
 
         uint256 token0Total = epochInfo.token0Total;
         uint256 token1Total = epochInfo.token1Total;
-        uint128 liquidityTotal = epochInfo.liquidityTotal;
 
         amount0 = FullMath.mulDiv(token0Total, liquidityDelta, liquidityTotal);
         amount1 = FullMath.mulDiv(token1Total, liquidityDelta, liquidityTotal);
 
         epochInfo.token0Total = uint128(token0Total - amount0);
         epochInfo.token1Total = uint128(token1Total - amount1);
-        epochInfo.liquidity[msg.sender] = liquidity - liquidityDelta;
-        epochInfo.liquidityTotal = liquidityTotal - liquidityDelta;
 
         IAlgebraPool(pool).collect(
             address(this),

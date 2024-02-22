@@ -48,6 +48,32 @@ contract PerpetualTest is BaseTest {
             });
         increasePosition(owner, _params);
     }
+    function test_KillPosition() public {
+        int24 tickSpacing = pool.tickSpacing();
+        IPerpetual.IncreasePositionParams memory _params = IPerpetual
+            .IncreasePositionParams({
+            collateralToken: address(collateralToken),
+            indexToken: address(indexToken),
+            tickLower: tickSpacing,
+            isLong: true,
+            collateralAmount: 1000,
+            indexAmount: 10000
+        });
+        console2.log("before opening position");
+        printBalances(owner);
+        increasePosition(owner, _params);
+        IPerpetual.KillPositionParams memory killParams = IPerpetual
+            .KillPositionParams({
+                collateralToken: address(collateralToken),
+                indexToken: address(indexToken),
+                isLong: true
+            });
+        console2.log("after opening position");
+        printBalances(owner);
+        killPosition(owner, killParams);
+        console2.log("after killing position");
+        printBalances(owner);
+    }
 
     function test_ClosePosition() public {
         int24 tickSpacing = pool.tickSpacing();
@@ -75,7 +101,7 @@ contract PerpetualTest is BaseTest {
                 deadline: block.timestamp + 1000,
                 amountIn: 100 ether,
                 amountOutMinimum: 0,
-                limitSqrtPrice: TickMath.MAX_SQRT_RATIO - 1
+                limitSqrtPrice: 0
             })
         );
         console2.log("after swapping");
@@ -152,6 +178,30 @@ contract PerpetualTest is BaseTest {
             positionBefore.liquidity - positionAfter.liquidity
         );
         assertEq(sizeDelta, positionBefore.size - positionAfter.size);
+    }
+
+    function killPosition(address _user, IPerpetual.KillPositionParams memory _params) public with(_user) {
+        IPerpetual.Position memory positionBefore = perpetual.getPosition(
+            _user,
+            address(collateralToken),
+            address(indexToken),
+            true
+        );
+        (uint256 collateralDelta,uint256 indexDelta) = perpetual.killPosition(_params);
+//        IPerpetual.Position memory positionAfter = perpetual.getPosition(
+//            _user,
+//            address(collateralToken),
+//            address(indexToken),
+//            true
+//        );
+//        assertEq(positionAfter.collateralAmount, 0);
+//        assertEq(positionAfter.debt, 0);
+//        assertEq(
+//            positionBefore.collateralAmount - collateralForRefund,
+//            positionAfter.collateralAmount
+//        );
+        console2.log("collateralDelta:%s", collateralDelta);
+        console2.log("indexDelta:%s", indexDelta);
     }
 
     function depositToVault(address _user, uint256 _amount) public with(_user) {

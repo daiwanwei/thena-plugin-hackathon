@@ -16,6 +16,12 @@ interface IVault {
         uint256 debtDelta;
     }
 
+    struct KillPositionParams {
+        address payer;
+        address user;
+        uint256 debtDelta;
+    }
+
     struct Position {
         uint256 price;
         uint256 collateral;
@@ -25,6 +31,8 @@ interface IVault {
     function increasePosition(IncreasePositionParams calldata params) external;
 
     function decreasePosition(DecreasePositionParams calldata params) external;
+
+    function killPosition(KillPositionParams memory _params) external returns (uint256 collateralForRefund);
 
     function totalDebt() external view returns (uint256);
 
