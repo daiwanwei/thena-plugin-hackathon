@@ -1,7 +1,7 @@
 import {Button, notification} from "antd";
 import {
     useReadErc20Allowance,
-    useWriteErc20Approve, useWritePerpetualDecreasePosition,
+    useWriteErc20Approve, useWriteErc20Mint, useWritePerpetualDecreasePosition,
     useWritePerpetualIncreasePosition, useWritePerpetualKillPosition,
     useWriteVaultDeposit,
     useWriteVaultWithdraw
@@ -153,6 +153,24 @@ export function ClosePositionButton({collateral,indexToken,isLong}: ClosePositio
                 {isFilled ? "Claim" : "Close"}
             </ConnectButton>
         </>
+    );
+}
+
+export interface MintButtonProps {
+    user: `0x${string}`
+    token: `0x${string}`
+    amount: bigint
+}
+
+export function MintButton({user,token,amount}: MintButtonProps) {
+    const {writeContract,error}=useWriteErc20Mint()
+    const onAction=()=>{
+        writeContract({address:token,args:[user,amount]})
+    }
+    return (
+        <ConnectButton onClick={onAction}>
+            Mint
+        </ConnectButton>
     );
 }
 
