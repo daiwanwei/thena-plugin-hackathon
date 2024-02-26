@@ -7,8 +7,9 @@ import useAddressData from "@/hooks/useAddressData";
 import {formatPrice} from "@/utils/common";
 import {PerpPosition} from "@/types";
 import useCoinData from "@/hooks/useCoinData";
-import {useCallback} from "react";
+import {useCallback, useState} from "react";
 import { Decimal } from 'decimal.js';
+import {useWatchBlockNumber} from "wagmi";
 export interface PerpData {
     // totalAssets: string
     // totalDebt: string
@@ -27,18 +28,24 @@ export interface PerpData {
 
 
 export default function usePerpData(collateral:`0x${string}`,indexToken:`0x${string}`,user:`0x${string}`):PerpData{
+    const [blockNumber,setBlockNumber]=useState(BigInt(0))
+    useWatchBlockNumber({
+        onBlockNumber:(blockNumber)=>{
+            setBlockNumber(blockNumber)
+        }
+    })
     const {
         perpetual,
         poolFactory
     }=useAddressData()
     const pool=(useReadAlgebraFactoryPoolByPair({address:poolFactory,args:[collateral,indexToken]}).data?.toString()||'0x0000000000000000000000000000000000000000') as `0x${string}`
-    const poolState=useReadAlgebraPoolSafelyGetStateOfAmm({address:pool}).data
+    const poolState=useReadAlgebraPoolSafelyGetStateOfAmm({address:pool,blockNumber:blockNumber}).data
     const token0=(useReadAlgebraPoolToken0({address:pool}).data?.toString() ||'0x0000000000000000000000000000000000000000') as `0x${string}`
     const collateralIsToken0=token0.toLowerCase()===collateral.toLowerCase()
     const priceSqrt=poolState? poolState[0]:BigInt(0)
     let price='0'
     if (priceSqrt!==BigInt(0)){
-        price=formatPrice(priceSqrt,collateralIsToken0)
+        price=formatPrice(priceSqrt,collateralIsToken0,5)
     }
     const {
         coinBalances:collateralBalances,
@@ -46,6 +53,9 @@ export default function usePerpData(collateral:`0x${string}`,indexToken:`0x${str
     }=useCoinData(collateral,user)
 
     const getIndexTokenAmount=useCallback((collateralAmount:bigint,leverage:bigint):bigint=>{
+        if (price==='0'){
+            return BigInt(0)
+        }
         const positionSize=collateralAmount*leverage
         const indexTokenAmount=collateralIsToken0?
             new Decimal(positionSize.toString()).dividedBy(price).toFixed(0):

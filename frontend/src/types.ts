@@ -5,12 +5,15 @@ export interface PerpPosition {
     collateral: `0x${string}`
     indexToken: `0x${string}`
     isLong: boolean
-    size: string
-    collateralAmount: string
-    debt: string
-    liquidity: string
-    tick: string
-    epoch: string
-    realisedPnl: string
+    size: bigint
+    collateralAmount: bigint
+    debt: bigint
+    liquidity: bigint
+    epoch: bigint
+    entryPrice: bigint
+    takeProfitPrice: bigint
+    realisedPnl: bigint
+    isFilled: boolean
+    isOpening: boolean
 }
 

@@ -1,6 +1,6 @@
 'use client'
 
-import {createContext, useContext} from "react";
+import {createContext, useContext, useState} from "react";
 import {
     useReadErc20BalanceOf,
     useReadErc20Decimals,
@@ -11,6 +11,7 @@ import {
     useReadVaultTotalCollateral,
     useReadVaultTotalDebt
 } from "@/generated";
+import {useWatchBlockNumber} from "wagmi";
 
 export interface CoinData {
     coinName: string
@@ -22,11 +23,17 @@ export interface CoinData {
 
 
 export default function useCoinData(coin:`0x${string}`,user:`0x${string}`):CoinData{
+    const [blockNumber,setBlockNumber]=useState(BigInt(0))
+    useWatchBlockNumber({
+        onBlockNumber:(blockNumber)=>{
+            setBlockNumber(blockNumber)
+        }
+    })
     const coinName=useReadErc20Name({address:coin})
     const coinSymbol=useReadErc20Name({address:coin})
     const coinDecimals=useReadErc20Decimals({address:coin})
-    const coinTotalSupply=useReadErc20TotalSupply({address:coin})
-    const coinBalance=useReadErc20BalanceOf({address:coin,args:[user]})
+    const coinTotalSupply=useReadErc20TotalSupply({address:coin,blockNumber:blockNumber})
+    const coinBalance=useReadErc20BalanceOf({address:coin,args:[user],blockNumber:blockNumber})
 
     return {
         coinName:coinName.data?.toString()||'',
