@@ -13,8 +13,10 @@ import useCoinData from "@/hooks/useCoinData";
 
 export function FaucetCard() {
     const [token, setToken] = useState<string>('usdc');
-    const onTokenSelect = (token: string) => {
-        setToken(token);
+    const onTokenSelect = (token: string | null) => {
+        if (token) {
+            setToken(token);
+        }
     }
 
     const [inputBalances, setInputBalances] = useState<string>('0');
@@ -43,7 +45,7 @@ export function FaucetCard() {
                     <p>{formatBalances(coinBalances,coinDecimals)}</p>
                 </div>
                 <div className="flex flex-row justify-between gap-10">
-                    <TokenSelect onSelect={onTokenSelect} />
+                    <TokenSelect defaultToken={"usdc"} onSelect={onTokenSelect} />
                     <InputNumber<string>
                         style={{ width: 200 }}
                         defaultValue="0"
