@@ -203,7 +203,7 @@ contract BaseTest is
         pool = IAlgebraPool(poolAddress);
     }
 
-    function swap(
+    function swapToken(
         address _user,
         ISwapRouter.ExactInputSingleParams memory _swapParams
     ) public with(_user) returns (uint256 amountOut) {
@@ -211,8 +211,7 @@ contract BaseTest is
         IERC20 tokenOut = IERC20(_swapParams.tokenOut);
         uint256 balanceInBefore = tokenIn.balanceOf(_user);
         uint256 balanceOutBefore = tokenOut.balanceOf(_user);
-        tokenIn.approve(address(swapRouter), type(uint256).max);
-        amountOut = swapRouter.exactInputSingle(_swapParams);
+        amountOut = swap(address(swapRouter), _swapParams);
         uint256 balanceInAfter = tokenIn.balanceOf(_user);
         uint256 balanceOutAfter = tokenOut.balanceOf(_user);
         assertEq(balanceInBefore - balanceInAfter, _swapParams.amountIn);

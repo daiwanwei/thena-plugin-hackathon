@@ -22,7 +22,7 @@ contract PoolTest is BaseTest {
                 amountOutMinimum: 0,
                 limitSqrtPrice: 0
             });
-        swap(owner, params);
+        swapToken(owner, params);
     }
 
     function test_PlaceOrder() public {

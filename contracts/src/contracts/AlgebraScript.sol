@@ -79,4 +79,13 @@ contract AlgebraScript {
             })
         );
     }
+
+    function swap(
+        address _swapRouter,
+        ISwapRouter.ExactInputSingleParams memory params
+    ) public returns (uint256 amountOut) {
+        ISwapRouter swapRouter = ISwapRouter(_swapRouter);
+        IERC20(params.tokenIn).approve(address(swapRouter), params.amountIn);
+        amountOut = swapRouter.exactInputSingle(params);
+    }
 }

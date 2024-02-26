@@ -58,4 +58,25 @@ contract PoolScript is Script, AlgebraScript {
             0
         );
     }
+
+    function swapToken(
+        address _swapRouter,
+        address _tokenIn,
+        address _tokenOut,
+        uint256 _amountIn
+    ) public {
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        vm.startBroadcast(deployerPrivateKey);
+        ISwapRouter.ExactInputSingleParams memory params = ISwapRouter
+            .ExactInputSingleParams({
+                tokenIn: _tokenIn,
+                tokenOut: _tokenOut,
+                recipient: vm.addr(deployerPrivateKey),
+                deadline: block.timestamp + 1000,
+                amountIn: _amountIn,
+                amountOutMinimum: 0,
+                limitSqrtPrice: 0
+            });
+        swap(_swapRouter, params);
+    }
 }

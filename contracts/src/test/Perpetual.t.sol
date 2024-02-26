@@ -102,7 +102,7 @@ contract PerpetualTest is BaseTest {
         console2.log("after opening position");
         printBalances(owner);
         console2.log("before swapping");
-        swap(
+        swapToken(
             owner,
             ISwapRouter.ExactInputSingleParams({
                 tokenIn: address(indexToken),
