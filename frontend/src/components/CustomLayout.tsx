@@ -24,7 +24,7 @@ const items=[
     },
     {
         key: '5',
-        label: <Link href={'/faucet'}>faucet</Link>,
+        label: <Link href={'/faucet'}>Faucet</Link>,
     },
 ]
 
