@@ -32,7 +32,7 @@ export default function UserPerpPositionList() {
             action:<ClosePositionButton collateral={usdc} indexToken={wbnb} isLong={true} />,
             isOpening:shortWbnb.perpPosition.isOpening
         }
-    ].filter((item)=>item.isOpening)
+    ]
     return (
         <List
             className="w-[600px]"

@@ -116,9 +116,18 @@ export function ClosePositionButton({collateral,indexToken,isLong}: ClosePositio
     )
     const {perpetual}=useAddressData()
     const isFilled=positionData.perpPosition.isFilled
+    const isOpening=positionData.perpPosition.isOpening
     const {writeContract:kill,error:killErr}=useWritePerpetualKillPosition()
     const {writeContract: claim,error:claimErr}=useWritePerpetualDecreasePosition()
     const onAction=useCallback(()=>{
+        if (!isOpening) {
+            api.error({
+                message: 'Position is not open',
+                description:
+                    'The position is not open',
+            });
+            return
+        }
         const params={
             collateralToken:collateral,
             indexToken:indexToken,
