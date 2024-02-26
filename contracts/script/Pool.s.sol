@@ -31,11 +31,31 @@ contract PoolScript is Script, AlgebraScript {
             _positionManager,
             _token0,
             _token1,
-            1000000000000000000,
-            1000000000000000000,
-            -887220,
-            887220,
+            10000000000 ether,
+            10000000000 ether,
+            60 * -100,
+            60 * 100,
             vm.addr(deployerPrivateKey)
+        );
+    }
+
+    function increaseLiquidityToPool(
+        address _positionManager,
+        uint256 tokenId,
+        address _token0,
+        address _token1
+    ) public {
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        vm.startBroadcast(deployerPrivateKey);
+        increaseLiquidity(
+            _positionManager,
+            tokenId,
+            _token0,
+            _token1,
+            10000000000 ether,
+            10000000000 ether,
+            0,
+            0
         );
     }
 }

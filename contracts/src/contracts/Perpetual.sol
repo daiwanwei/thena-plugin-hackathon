@@ -43,10 +43,21 @@ contract Perpetual is IPerpetual {
         IncreasePositionParams calldata _params
     ) public returns (uint128 liquidityDelta, uint256 sizeDelta) {
         if (_params.isLong != true) {
-            revert("short position is not implemented yet");
+            revert NotImplemented();
         }
 
-        int24 _tickLower = _params.tickLower;
+        if (
+            checkPosition(
+                msg.sender,
+                _params.collateralToken,
+                _params.indexToken,
+                _params.isLong
+            )
+        ) {
+            revert PositionAlreadyExisted();
+        }
+
+        int24 _tickLower = TickMath.getTickAtSqrtRatio(_params.takeProfitPrice);
         bool _isToken0Long = isToken0Long(
             _params.collateralToken,
             _params.indexToken,
@@ -101,7 +112,7 @@ contract Perpetual is IPerpetual {
             _params.indexAmount,
             liquidityDelta,
             _entryPrice,
-            _tickLower,
+            _takeProfitPrice,
             epoch,
             true
         );
@@ -110,6 +121,20 @@ contract Perpetual is IPerpetual {
     function decreasePosition(
         DecreasePositionParams calldata _params
     ) public returns (uint128 liquidityDelta, uint256 sizeDelta) {
+        if (_params.isLong != true) {
+            revert NotImplemented();
+        }
+
+        if (
+            !checkPosition(
+                msg.sender,
+                _params.collateralToken,
+                _params.indexToken,
+                _params.isLong
+            )
+        ) {
+            revert PositionNotExisted();
+        }
         address _collateralToken = _params.collateralToken;
         address _indexToken = _params.indexToken;
         bool _isLong = _params.isLong;
@@ -157,7 +182,7 @@ contract Perpetual is IPerpetual {
             position.debt,
             position.liquidity,
             position.entryPrice,
-            position.tick,
+            position.takeProfitPrice,
             position.epoch,
             false
         );
@@ -186,11 +211,13 @@ contract Perpetual is IPerpetual {
         if (position.liquidity <= 0) {
             revert PositionNotFound();
         }
-
-        (uint256 amount0,uint256 amount1) = _killOrder(
+        int24 _tickLower = TickMath.getTickAtSqrtRatio(
+            position.takeProfitPrice
+        );
+        (uint256 amount0, uint256 amount1) = _killOrder(
             _collateralToken,
             _indexToken,
-            position.tick,
+            _tickLower,
             _isToken0Long,
             uint160(position.liquidity)
         );
@@ -198,13 +225,13 @@ contract Perpetual is IPerpetual {
         uint256 indexAmount = _isToken0Long ? amount1 : amount0;
         uint256 collateralAmount = _isToken0Long ? amount0 : amount1;
 
-        uint256 indexForRepay=_swap(
+        uint256 indexForRepay = _swap(
             _collateralToken,
             _indexToken,
             collateralAmount,
             0,
             address(swapRouter)
-        )+indexAmount;
+        ) + indexAmount;
 
         if (indexForRepay > position.debt) {
             collateralDelta = position.collateralAmount;
@@ -217,29 +244,29 @@ contract Perpetual is IPerpetual {
                 position.debt
             );
             _refund(_indexToken, msg.sender, indexDelta);
-        }else{
-            indexDelta=0;
-            collateralDelta=_kill(
+        } else {
+            indexDelta = 0;
+            collateralDelta = _kill(
                 msg.sender,
                 _collateralToken,
                 _indexToken,
                 indexForRepay
             );
         }
-//        _updatePosition(
-//            msg.sender,
-//            _collateralToken,
-//            _indexToken,
-//            _isLong,
-//            position.size,
-//            position.collateralAmount,
-//            position.debt,
-//            position.liquidity,
-//            position.entryPrice,
-//            position.tick,
-//            position.epoch,
-//            false
-//        );
+        //        _updatePosition(
+        //            msg.sender,
+        //            _collateralToken,
+        //            _indexToken,
+        //            _isLong,
+        //            position.size,
+        //            position.collateralAmount,
+        //            position.debt,
+        //            position.liquidity,
+        //            position.entryPrice,
+        //            position.takeProfitPrice,
+        //            position.epoch,
+        //            false
+        //        );
         _removePosition(msg.sender, _collateralToken, _indexToken, _isLong);
     }
 
@@ -342,7 +369,7 @@ contract Perpetual is IPerpetual {
         uint256 _debtDelta,
         uint160 _liquidityDelta,
         uint160 _entryPrice,
-        int24 _tickLower,
+        uint160 _takeProfitPrice,
         Epoch _epoch,
         bool _isIncrease
     ) private {
@@ -353,8 +380,7 @@ contract Perpetual is IPerpetual {
             _isLong
         );
         position.entryPrice = _entryPrice;
-        position.takeProfitPrice = TickMath.getSqrtRatioAtTick(_tickLower);
-        position.tick = _tickLower;
+        position.takeProfitPrice = _takeProfitPrice;
         position.epoch = _epoch;
         if (_isIncrease) {
             position.size += _sizeDelta;
@@ -370,7 +396,7 @@ contract Perpetual is IPerpetual {
                 _collateralDelta,
                 _debtDelta,
                 _liquidityDelta,
-                _tickLower
+                _takeProfitPrice
             );
         } else {
             position.size -= _sizeDelta;
@@ -386,7 +412,7 @@ contract Perpetual is IPerpetual {
                 _collateralDelta,
                 _debtDelta,
                 _liquidityDelta,
-                _tickLower
+                _takeProfitPrice
             );
         }
     }
@@ -500,7 +526,7 @@ contract Perpetual is IPerpetual {
             revert InvalidDebtDelta(_debt, _debtDelta);
         }
         IERC20(_indexToken).approve(address(vault), _debtDelta);
-        collateralDelta=vault.killPosition(
+        collateralDelta = vault.killPosition(
             IVault.KillPositionParams({
                 payer: address(this),
                 user: _user,
@@ -666,5 +692,23 @@ contract Perpetual is IPerpetual {
         IAlgebraPool pool = getPool(_collateralToken, _indexToken);
         (entryPrice, , , , , , ) = pool.safelyGetStateOfAMM();
         takeProfitPrice = TickMath.getSqrtRatioAtTick(_tickLower);
+    }
+
+    function checkPosition(
+        address _account,
+        address _collateralToken,
+        address _indexToken,
+        bool _isLong
+    ) public view returns (bool) {
+        Position memory position = getPosition(
+            _account,
+            _collateralToken,
+            _indexToken,
+            _isLong
+        );
+        if (position.liquidity > 0) {
+            return true;
+        }
+        return false;
     }
 }

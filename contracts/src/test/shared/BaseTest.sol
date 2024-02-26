@@ -129,10 +129,14 @@ contract BaseTest is
         with(_user)
         returns (address token0Address, address token1Address)
     {
-        TestERC20 tokenA = new TestERC20("USD Coin", "USDC", 100000000 ether);
-        TestERC20 tokenB = new TestERC20("BNB", "BNB", 100000000 ether);
-        tokenA.mint(_user, 100000000 ether);
-        tokenB.mint(_user, 100000000 ether);
+        TestERC20 tokenA = new TestERC20(
+            "USD Coin",
+            "USDC",
+            100000000000000 ether
+        );
+        TestERC20 tokenB = new TestERC20("BNB", "BNB", 100000000000000 ether);
+        tokenA.mint(_user, 10000000000000000000000000 ether);
+        tokenB.mint(_user, 10000000000000000000000000 ether);
         (token0, token1) = address(tokenA) < address(tokenB)
             ? (tokenA, tokenB)
             : (tokenB, tokenA);
@@ -178,10 +182,10 @@ contract BaseTest is
                 address(nonfungiblePositionManager),
                 address(token0),
                 address(token1),
-                1000000000000000000,
-                1000000000000000000,
-                -887220,
-                887220,
+                10000000000 ether,
+                10000000000 ether,
+                60 * -100,
+                60 * 100,
                 _user
             );
     }

@@ -7,7 +7,7 @@ interface IPerpetual {
     struct IncreasePositionParams {
         address collateralToken;
         address indexToken;
-        int24 tickLower;
+        uint160 takeProfitPrice;
         bool isLong;
         uint256 collateralAmount;
         uint256 indexAmount;
@@ -30,7 +30,6 @@ interface IPerpetual {
         uint256 collateralAmount;
         uint256 debt;
         uint160 liquidity;
-        int24 tick;
         Epoch epoch;
         int256 realisedPnl;
         uint160 entryPrice;
@@ -50,6 +49,11 @@ interface IPerpetual {
     error InvalidDebtDelta(uint256 debt, uint256 debtDelta);
     error InvalidLiquidityDelta(uint160 liquidity, uint160 liquidityDelta);
     error InsufficientBalance();
+    error PositionNotExisted();
+
+    //for Demo
+    error PositionAlreadyExisted();
+    error NotImplemented();
 
     event IncreasePosition(
         address indexed account,
@@ -60,7 +64,7 @@ interface IPerpetual {
         uint256 collateralDelta,
         uint256 debtDelta,
         uint160 liquidityDelta,
-        int24 tick
+        uint160 takeProfitPrice
     );
 
     event DecreasePosition(
@@ -72,7 +76,7 @@ interface IPerpetual {
         uint256 collateralDelta,
         uint256 debtDelta,
         uint160 liquidityDelta,
-        int24 tick
+        uint160 takeProfitPrice
     );
 
     function increasePosition(

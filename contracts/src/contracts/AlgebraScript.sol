@@ -55,4 +55,28 @@ contract AlgebraScript {
             _positionManager
         ).mint(_mintParams);
     }
+
+    function increaseLiquidity(
+        address _positionManager,
+        uint256 tokenId,
+        address _token0,
+        address _token1,
+        uint256 amount0,
+        uint256 amount1,
+        uint256 amount0Min,
+        uint256 amount1Min
+    ) public {
+        IERC20(_token0).approve(address(_positionManager), amount0);
+        IERC20(_token1).approve(address(_positionManager), amount1);
+        INonfungiblePositionManager(_positionManager).increaseLiquidity(
+            INonfungiblePositionManager.IncreaseLiquidityParams({
+                tokenId: tokenId,
+                amount0Desired: amount0,
+                amount1Desired: amount1,
+                amount0Min: amount0Min,
+                amount1Min: amount1Min,
+                deadline: block.timestamp + 1000
+            })
+        );
+    }
 }

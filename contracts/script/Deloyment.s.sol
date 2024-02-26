@@ -13,8 +13,16 @@ contract DeploymentScript is Script, AlgebraDeployer, PerpetualDeployer {
     function deployTokens() public returns (address token0, address token1) {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
-        TestERC20 tokenB = new TestERC20("WBNB", "WBNB", 1e18 ether);
-        TestERC20 tokenA = new TestERC20("USDC", "USDC", 1e18 ether);
+        TestERC20 tokenB = new TestERC20(
+            "WBNB",
+            "WBNB",
+            10000000000000000000000000 ether
+        );
+        TestERC20 tokenA = new TestERC20(
+            "USDC",
+            "USDC",
+            10000000000000000000000000 ether
+        );
         vm.label(address(tokenA), "USDC");
         vm.label(address(tokenB), "BNB");
         token0 = address(tokenA) < address(tokenB)

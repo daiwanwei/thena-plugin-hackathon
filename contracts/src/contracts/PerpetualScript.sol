@@ -46,7 +46,7 @@ contract PerpetualScript {
         address _perpetual,
         address _collateralToken,
         address _indexToken,
-        int24 _tickLower,
+        uint160 _takeProfitPrice,
         bool _isLong,
         uint256 _collateralAmount,
         uint256 _indexAmount
@@ -57,7 +57,7 @@ contract PerpetualScript {
             IPerpetual.IncreasePositionParams({
                 collateralToken: _collateralToken,
                 indexToken: _indexToken,
-                tickLower: _tickLower,
+                takeProfitPrice: _takeProfitPrice,
                 isLong: _isLong,
                 collateralAmount: _collateralAmount,
                 indexAmount: _indexAmount

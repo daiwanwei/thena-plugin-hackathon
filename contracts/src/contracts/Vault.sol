@@ -61,7 +61,9 @@ contract Vault is ERC4626, IVault {
         _repay(_params.payer, _params.user, _params.debtDelta);
     }
 
-    function killPosition(KillPositionParams memory _params) public returns (uint256 collateralForRefund) {
+    function killPosition(
+        KillPositionParams memory _params
+    ) public returns (uint256 collateralForRefund) {
         Position memory position = positions[_params.user];
         if (position.debt < _params.debtDelta) {
             revert("InvalidDebtDelta");
@@ -79,9 +81,9 @@ contract Vault is ERC4626, IVault {
             collateralForRefund = position.collateral;
             _refund(_params.user, _params.user, collateralForRefund);
         }
-        if (collateralForRefund<0) {
+        if (collateralForRefund < 0) {
             revert("invalid collateral for refund");
-//            revert InsufficientBalance();
+            //            revert InsufficientBalance();
         }
     }
 

@@ -32,7 +32,9 @@ interface IVault {
 
     function decreasePosition(DecreasePositionParams calldata params) external;
 
-    function killPosition(KillPositionParams memory _params) external returns (uint256 collateralForRefund);
+    function killPosition(
+        KillPositionParams memory _params
+    ) external returns (uint256 collateralForRefund);
 
     function totalDebt() external view returns (uint256);
 

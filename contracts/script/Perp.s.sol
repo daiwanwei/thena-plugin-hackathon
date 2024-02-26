@@ -27,7 +27,7 @@ contract PerpScript is Script, AlgebraScript, PerpetualScript {
             name,
             symbol
         );
-        depositToVault(vaultAddress, _asset, deployer, _amount);
+        depositToVault(vaultAddress, _asset, deployer, 100000000 ether);
         vm.label(vaultAddress, "Vault");
     }
 
@@ -53,11 +53,13 @@ contract PerpScript is Script, AlgebraScript, PerpetualScript {
     ) public {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
+        uint160 takeProfitPrice = TickMath.getSqrtRatioAtTick(_tickLower);
+        console2.log("takeProfitPrice: %s", takeProfitPrice);
         increasePosition(
             _perpetual,
             _collateral,
             _index,
-            _tickLower,
+            takeProfitPrice,
             true,
             _collateralAmount,
             _indexAmount
