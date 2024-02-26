@@ -5,6 +5,7 @@ import Icon from "@ant-design/icons";
 
 
 interface TokenSelectProps {
+    defaultToken: string;
     onSelect: (token: string) => void;
 }
 
@@ -28,10 +29,10 @@ const items=[
 ];
 
 
-export function TokenSelect({onSelect}: TokenSelectProps){
+export function TokenSelect({defaultToken="usdc",onSelect}: TokenSelectProps){
     return(
         <Select
-            defaultValue="usdc"
+            defaultValue={defaultToken}
             style={{ width: 200 }}
             onChange={onSelect}
             options={items}

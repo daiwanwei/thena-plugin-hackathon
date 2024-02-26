@@ -81,7 +81,7 @@ export function ActionItem({action,token,onTokenSelect}: ActionItemProps) {
                 </div>
             )}
             <div className="flex flex-row justify-between gap-10">
-                <TokenSelect onSelect={onTokenSelect} />
+                <TokenSelect defaultToken={"usdc"} onSelect={onTokenSelect} />
                 <InputNumber<string>
                     style={{ width: 200 }}
                     defaultValue="0"

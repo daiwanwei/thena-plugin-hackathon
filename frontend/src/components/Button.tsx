@@ -1,8 +1,14 @@
 import {Button, notification} from "antd";
 import {
     useReadErc20Allowance,
-    useWriteErc20Approve, useWriteErc20Mint, useWritePerpetualDecreasePosition,
-    useWritePerpetualIncreasePosition, useWritePerpetualKillPosition,
+    useWriteErc20Approve,
+    useWriteErc20Mint,
+    useWritePerpetualDecreasePosition,
+    useWritePerpetualIncreasePosition,
+    useWritePerpetualKillPosition,
+    useWriteSwapRouter,
+    useWriteSwapRouterExactInput,
+    useWriteSwapRouterExactInputSingle,
     useWriteVaultDeposit,
     useWriteVaultWithdraw
 } from "@/generated";
@@ -14,6 +20,92 @@ import useAddressData from "@/hooks/useAddressData";
 import {formatPrice, proximalPriceSqrt} from "@/utils/common";
 import usePerpPositionData from "@/hooks/usePerpPositionData";
 import usePerpData from "@/hooks/usePerpData";
+import useCoinData from "@/hooks/useCoinData";
+
+
+export interface SwapButtonProps {
+    tokenIn: `0x${string}`
+    tokenOut: `0x${string}`
+    amount: bigint
+    receiver: `0x${string}`
+}
+
+export function SwapButton({tokenIn,tokenOut,amount,receiver}: SwapButtonProps) {
+    const [blockNumber,setBlockNumber]=useState(BigInt(0))
+    useWatchBlockNumber({
+        onBlockNumber:(blockNumber)=>{
+            setBlockNumber(blockNumber)
+        }
+    })
+    const user=useUser()
+    const {swapRouter}=useAddressData()
+    const {coinBalances}=useCoinData(tokenIn,user)
+    const allowance=useReadErc20Allowance({address:tokenIn,args:[user,swapRouter],blockNumber:blockNumber}).data || BigInt(0)
+    const [needToApprove,setNeedToApprove]=useState(false)
+    const {writeContract,error}=useWriteSwapRouterExactInputSingle()
+    const [api, contextHolder] = notification.useNotification();
+    const validInput=BigInt(coinBalances)>=amount && allowance>=amount
+    const onAction=()=>{
+        if (tokenIn===tokenOut) {
+            api.error({
+                message: 'Invalid token In and token Out',
+                description:
+                    'The token In and token Out are the same',
+            });
+            return
+        }
+        if (!validInput) {
+            api.error({
+                message: 'Invalid Input',
+                description:
+                    'The input is not valid',
+            });
+            return
+        }
+        writeContract({address:swapRouter,args:[{
+                tokenIn:tokenIn,
+                tokenOut:tokenOut,
+                amountIn:amount,
+                amountOutMinimum:BigInt(0),
+                recipient:receiver,
+                limitSqrtPrice:BigInt(0),
+                deadline: BigInt(Math.floor(Date.now()/1000 )+ 1000)
+            }]})
+    }
+    useEffect(() => {
+        console.log(allowance,amount)
+        if(allowance<amount){
+            setNeedToApprove(true)
+        }else{
+            setNeedToApprove(false)
+        }
+    }, [allowance,amount]);
+
+    useEffect(() => {
+        if(error){
+            api.error({
+                message: 'Swap Failed',
+                description:
+                error.message,
+            });
+        }
+    }, [api,error]);
+
+    if (needToApprove) {
+        return (
+            <ApproveButton token={tokenIn} spender={swapRouter} amount={amount}/>
+        );
+    }
+    return (
+        <>
+            {contextHolder}
+            <ConnectButton onClick={onAction}>
+                Swap
+            </ConnectButton>
+        </>
+    );
+
+}
 
 
 export interface OpenPositionButtonProps {
