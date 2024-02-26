@@ -23,6 +23,13 @@ contract PerpetualTest is BaseTest {
         (string memory _name, string memory _symbol) = getVaultMetadata(
             address(indexToken)
         );
+        createVault(
+            address(vaultFactory),
+            address(collateralToken),
+            address(indexToken),
+            _name,
+            _symbol
+        );
         vault = IVault(
             createVault(
                 address(vaultFactory),
@@ -51,13 +58,11 @@ contract PerpetualTest is BaseTest {
     }
     function test_KillPosition() public {
         int24 tickSpacing = pool.tickSpacing();
-        uint160 takeProfitPrice1 = TickMath.getSqrtRatioAtTick(10980);
-        console2.log("takeProfitPrice1: %s", takeProfitPrice1);
-        uint160 takeProfitPrice = 137181432533526987591609206383;
+        uint160 takeProfitPrice = TickMath.getSqrtRatioAtTick(tickSpacing * -2);
         IPerpetual.IncreasePositionParams memory _params = IPerpetual
             .IncreasePositionParams({
-                collateralToken: address(collateralToken),
-                indexToken: address(indexToken),
+                indexToken: address(collateralToken),
+                collateralToken: address(indexToken),
                 takeProfitPrice: takeProfitPrice,
                 isLong: true,
                 collateralAmount: 1 ether,
@@ -68,8 +73,8 @@ contract PerpetualTest is BaseTest {
         increasePosition(owner, _params);
         IPerpetual.KillPositionParams memory killParams = IPerpetual
             .KillPositionParams({
-                collateralToken: address(collateralToken),
-                indexToken: address(indexToken),
+                indexToken: address(collateralToken),
+                collateralToken: address(indexToken),
                 isLong: true
             });
         console2.log("after opening position");
@@ -215,6 +220,20 @@ contract PerpetualTest is BaseTest {
     }
 
     function depositToVault(address _user, uint256 _amount) public with(_user) {
+        address vault = vaultFactory.vaults(
+            address(indexToken),
+            address(collateralToken)
+        );
         depositToVault(address(vault), address(indexToken), _user, _amount);
+        vault = vaultFactory.vaults(
+            address(collateralToken),
+            address(indexToken)
+        );
+        depositToVault(
+            address(vault),
+            address(collateralToken),
+            _user,
+            _amount
+        );
     }
 }

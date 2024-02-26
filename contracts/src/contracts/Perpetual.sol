@@ -87,9 +87,14 @@ contract Perpetual is IPerpetual {
             0,
             address(swapRouter)
         );
+
         liquidityDelta = _placeOrder(
-            _params.collateralToken,
-            _params.indexToken,
+            _params.collateralToken > _params.indexToken
+                ? _params.indexToken
+                : _params.collateralToken,
+            _params.collateralToken > _params.indexToken
+                ? _params.collateralToken
+                : _params.indexToken,
             _tickLower,
             _isToken0Long,
             sizeDelta
@@ -215,8 +220,8 @@ contract Perpetual is IPerpetual {
             position.takeProfitPrice
         );
         (uint256 amount0, uint256 amount1) = _killOrder(
-            _collateralToken,
-            _indexToken,
+            _collateralToken > _indexToken ? _indexToken : _collateralToken,
+            _collateralToken > _indexToken ? _collateralToken : _indexToken,
             _tickLower,
             _isToken0Long,
             uint160(position.liquidity)
@@ -287,7 +292,7 @@ contract Perpetual is IPerpetual {
             _isToken0Long ? _size : 0,
             _isToken0Long ? 0 : _size
         );
-
+        console2.log("liquidity: %s", liquidity);
         bool _zeroForOne = _isToken0Long;
 
         IERC20 token = _isToken0Long ? IERC20(_token0) : IERC20(_token1);
