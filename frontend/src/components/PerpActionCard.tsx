@@ -2,11 +2,12 @@ import {Button, Card, InputNumber, Tabs} from "antd";
 import {TokenSelect} from "@/components/TokenSelect";
 import {useEffect, useState} from "react";
 import useVaultData from "@/hooks/useVaultData";
-import {formatBalances} from "@/utils/common";
-import {DepositButton} from "@/components/Button";
+import {encodePriceSqrt, formatAmount, formatBalances} from "@/utils/common";
+import {DepositButton, OpenPositionButton} from "@/components/Button";
 import usePerpData from "@/hooks/usePerpData";
 import useAddressData from "@/hooks/useAddressData";
 import useUser from "@/hooks/useUser";
+import BigNumber from "bignumber.js";
 const onChange = (key: string) => {
     console.log(key);
 };
@@ -123,9 +124,14 @@ export function ActionItem({collateral}: ActionItemProps) {
                 <p>Position Size </p>
                 <p>{positionSize}</p>
             </div>
-            {/*<div className="flex flex-row justify-between gap-10">*/}
-            {/*    <DepositButton token={asset} receiver={vault} amount={BigInt(1000000000000000000)} />*/}
-            {/*</div>*/}
+            <OpenPositionButton
+                collateral={collateralToken}
+                indexToken={indexToken}
+                isLong={true}
+                pay={BigInt(formatAmount(pay.toString(),collateralDecimals))}
+                indexAmount={BigInt(getIndexTokenAmount(BigInt(formatAmount(pay.toString(),collateralDecimals)),BigInt(leverage)))}
+                tpPrice={encodePriceSqrt(BigNumber(takeProfit))}
+            />
         </div>
     );
 }

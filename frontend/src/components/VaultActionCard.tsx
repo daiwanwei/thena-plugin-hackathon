@@ -1,10 +1,12 @@
+'use client'
 import {Button, Card, InputNumber, Tabs} from "antd";
 import {TokenSelect} from "@/components/TokenSelect";
-import {useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import useVaultData from "@/hooks/useVaultData";
-import {formatBalances} from "@/utils/common";
-import {DepositButton} from "@/components/Button";
+import {formatAmount, formatBalances} from "@/utils/common";
+import {DepositButton, WithdrawButton} from "@/components/Button";
 import useAddressData from "@/hooks/useAddressData";
+import useUser from "@/hooks/useUser";
 const onChange = (key: string) => {
     console.log(key);
 };
@@ -41,11 +43,11 @@ interface ActionItemProps {
 }
 
 export function ActionItem({action,token,onTokenSelect}: ActionItemProps) {
-    const [amount, setAmount] = useState<string>('0');
+    const [inputBalances, setInputBalances] = useState<string>('0');
     const {wbnb,usdc}=useAddressData()
     const asset=token==='usdc'?usdc:wbnb
     const collateral=token==='usdc'?wbnb:usdc
-    const user= "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+    const user= useUser()
     const {
         vault,
         totalAssets,
@@ -54,6 +56,13 @@ export function ActionItem({action,token,onTokenSelect}: ActionItemProps) {
         pTokenDecimals,
         pTokenBalances,
     }= useVaultData(asset,collateral,user)
+
+    const onAmountChange = useCallback((value: string | null) => {
+        if (value) {
+            setInputBalances(value);
+        }
+    },[]);
+
     return (
         <div className="flex flex-col gap-2">
             <div className="flex flex-row justify-between gap-10">
@@ -67,7 +76,7 @@ export function ActionItem({action,token,onTokenSelect}: ActionItemProps) {
                 </div>
             ) : (
                 <div className="flex flex-row justify-between gap-10">
-                    <p>your Balances</p>
+                    <p>supplied</p>
                     <p>{formatBalances(pTokenBalances,pTokenDecimals)}</p>
                 </div>
             )}
@@ -78,15 +87,17 @@ export function ActionItem({action,token,onTokenSelect}: ActionItemProps) {
                     defaultValue="0"
                     min="0"
                     max="100000000000000000000000"
-                    step="0.000001"
-                    onChange={(value:string | null) => {
-                        console.log(value);
-                    }}
+                    step="0.01"
+                    onChange={onAmountChange}
                     stringMode
                 />
             </div>
             <div className="flex flex-row justify-between gap-10">
-                <DepositButton token={asset} receiver={vault} amount={BigInt(1000000000000000000)} />
+                {action === 'deposit' ? (
+                    <DepositButton token={asset} receiver={vault} amount={BigInt(formatAmount(inputBalances,assetDecimals))} />
+                ) : (
+                   <WithdrawButton vault={vault} receiver={user} amount={BigInt(formatAmount(inputBalances,assetDecimals))}/>
+                )}
             </div>
         </div>
     );
