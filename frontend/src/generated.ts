@@ -1175,10 +1175,423 @@ export const erc20Abi = [
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// limitOrderPlugin
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const limitOrderPluginAbi = [
+  {
+    stateMutability: 'nonpayable',
+    type: 'constructor',
+    inputs: [
+      { name: '_wNativeToken', internalType: 'address', type: 'address' },
+      { name: '_poolDeployer', internalType: 'address', type: 'address' },
+      { name: '_basePluginFactory', internalType: 'address', type: 'address' },
+      { name: '_factory', internalType: 'address', type: 'address' },
+    ],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [],
+    name: 'ALGEBRA_BASE_PLUGIN_MANAGER',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+  },
+  {
+    stateMutability: 'nonpayable',
+    type: 'function',
+    inputs: [
+      { name: 'pool', internalType: 'address', type: 'address' },
+      { name: 'tick', internalType: 'int24', type: 'int24' },
+    ],
+    name: 'afterInitialize',
+    outputs: [],
+  },
+  {
+    stateMutability: 'nonpayable',
+    type: 'function',
+    inputs: [
+      { name: 'pool', internalType: 'address', type: 'address' },
+      { name: 'zeroToOne', internalType: 'bool', type: 'bool' },
+      { name: 'tick', internalType: 'int24', type: 'int24' },
+    ],
+    name: 'afterSwap',
+    outputs: [],
+  },
+  {
+    stateMutability: 'nonpayable',
+    type: 'function',
+    inputs: [
+      { name: 'amount0Owed', internalType: 'uint256', type: 'uint256' },
+      { name: 'amount1Owed', internalType: 'uint256', type: 'uint256' },
+      { name: 'data', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'algebraMintCallback',
+    outputs: [],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [],
+    name: 'basePluginFactory',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [{ name: '', internalType: 'Epoch', type: 'uint232' }],
+    name: 'epochInfos',
+    outputs: [
+      { name: 'filled', internalType: 'bool', type: 'bool' },
+      { name: 'tickLower', internalType: 'int24', type: 'int24' },
+      { name: 'tickUpper', internalType: 'int24', type: 'int24' },
+      { name: 'liquidityTotal', internalType: 'uint128', type: 'uint128' },
+      { name: 'token0', internalType: 'address', type: 'address' },
+      { name: 'token1', internalType: 'address', type: 'address' },
+      { name: 'token0Total', internalType: 'uint128', type: 'uint128' },
+      { name: 'token1Total', internalType: 'uint128', type: 'uint128' },
+    ],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [],
+    name: 'epochNext',
+    outputs: [{ name: '', internalType: 'Epoch', type: 'uint232' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    name: 'epochs',
+    outputs: [{ name: '', internalType: 'Epoch', type: 'uint232' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [],
+    name: 'factory',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [
+      { name: 'pool', internalType: 'address', type: 'address' },
+      { name: 'tickLower', internalType: 'int24', type: 'int24' },
+      { name: 'tickUpper', internalType: 'int24', type: 'int24' },
+      { name: 'zeroForOne', internalType: 'bool', type: 'bool' },
+    ],
+    name: 'getEpoch',
+    outputs: [{ name: '', internalType: 'Epoch', type: 'uint232' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [
+      { name: 'epoch', internalType: 'Epoch', type: 'uint232' },
+      { name: 'owner', internalType: 'address', type: 'address' },
+    ],
+    name: 'getEpochLiquidity',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [{ name: 'epoch', internalType: 'Epoch', type: 'uint232' }],
+    name: 'isFilled',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+  },
+  {
+    stateMutability: 'nonpayable',
+    type: 'function',
+    inputs: [
+      {
+        name: 'poolKey',
+        internalType: 'struct PoolAddress.PoolKey',
+        type: 'tuple',
+        components: [
+          { name: 'token0', internalType: 'address', type: 'address' },
+          { name: 'token1', internalType: 'address', type: 'address' },
+        ],
+      },
+      { name: 'tickLower', internalType: 'int24', type: 'int24' },
+      { name: 'tickUpper', internalType: 'int24', type: 'int24' },
+      { name: 'zeroForOne', internalType: 'bool', type: 'bool' },
+      { name: 'to', internalType: 'address', type: 'address' },
+    ],
+    name: 'kill',
+    outputs: [
+      { name: 'amount0', internalType: 'uint256', type: 'uint256' },
+      { name: 'amount1', internalType: 'uint256', type: 'uint256' },
+    ],
+  },
+  {
+    stateMutability: 'nonpayable',
+    type: 'function',
+    inputs: [
+      {
+        name: '_params',
+        internalType: 'struct ILimitOrderPlugin.KillParams',
+        type: 'tuple',
+        components: [
+          {
+            name: 'poolKey',
+            internalType: 'struct PoolAddress.PoolKey',
+            type: 'tuple',
+            components: [
+              { name: 'token0', internalType: 'address', type: 'address' },
+              { name: 'token1', internalType: 'address', type: 'address' },
+            ],
+          },
+          { name: 'tickLower', internalType: 'int24', type: 'int24' },
+          { name: 'tickUpper', internalType: 'int24', type: 'int24' },
+          { name: 'zeroForOne', internalType: 'bool', type: 'bool' },
+          { name: 'to', internalType: 'address', type: 'address' },
+          { name: 'liquidityDelta', internalType: 'uint128', type: 'uint128' },
+        ],
+      },
+    ],
+    name: 'kill',
+    outputs: [
+      { name: 'amount0', internalType: 'uint256', type: 'uint256' },
+      { name: 'amount1', internalType: 'uint256', type: 'uint256' },
+    ],
+  },
+  {
+    stateMutability: 'nonpayable',
+    type: 'function',
+    inputs: [
+      {
+        name: 'poolKey',
+        internalType: 'struct PoolAddress.PoolKey',
+        type: 'tuple',
+        components: [
+          { name: 'token0', internalType: 'address', type: 'address' },
+          { name: 'token1', internalType: 'address', type: 'address' },
+        ],
+      },
+      { name: 'tickLower', internalType: 'int24', type: 'int24' },
+      { name: 'zeroForOne', internalType: 'bool', type: 'bool' },
+      { name: 'liquidity', internalType: 'uint128', type: 'uint128' },
+    ],
+    name: 'place',
+    outputs: [],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [],
+    name: 'poolDeployer',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+  },
+  {
+    stateMutability: 'nonpayable',
+    type: 'function',
+    inputs: [
+      { name: 'pool', internalType: 'address', type: 'address' },
+      { name: 'tickSpacing', internalType: 'int24', type: 'int24' },
+    ],
+    name: 'setTickSpacing',
+    outputs: [],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'tickLowerLasts',
+    outputs: [{ name: '', internalType: 'int24', type: 'int24' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'tickSpacings',
+    outputs: [{ name: '', internalType: 'int24', type: 'int24' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [],
+    name: 'wNativeToken',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+  },
+  {
+    stateMutability: 'nonpayable',
+    type: 'function',
+    inputs: [
+      { name: 'epoch', internalType: 'Epoch', type: 'uint232' },
+      { name: 'to', internalType: 'address', type: 'address' },
+    ],
+    name: 'withdraw',
+    outputs: [
+      { name: 'amount0', internalType: 'uint256', type: 'uint256' },
+      { name: 'amount1', internalType: 'uint256', type: 'uint256' },
+    ],
+  },
+  {
+    stateMutability: 'nonpayable',
+    type: 'function',
+    inputs: [
+      { name: 'epoch', internalType: 'Epoch', type: 'uint232' },
+      { name: 'to', internalType: 'address', type: 'address' },
+      { name: 'liquidityDelta', internalType: 'uint128', type: 'uint128' },
+    ],
+    name: 'withdraw',
+    outputs: [
+      { name: 'amount0', internalType: 'uint256', type: 'uint256' },
+      { name: 'amount1', internalType: 'uint256', type: 'uint256' },
+    ],
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'epoch', internalType: 'Epoch', type: 'uint232', indexed: true },
+      {
+        name: 'tickLower',
+        internalType: 'int24',
+        type: 'int24',
+        indexed: false,
+      },
+      {
+        name: 'zeroForOne',
+        internalType: 'bool',
+        type: 'bool',
+        indexed: false,
+      },
+    ],
+    name: 'Fill',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'owner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'epoch', internalType: 'Epoch', type: 'uint232', indexed: true },
+      {
+        name: 'tickLower',
+        internalType: 'int24',
+        type: 'int24',
+        indexed: false,
+      },
+      {
+        name: 'zeroForOne',
+        internalType: 'bool',
+        type: 'bool',
+        indexed: false,
+      },
+      {
+        name: 'liquidity',
+        internalType: 'uint128',
+        type: 'uint128',
+        indexed: false,
+      },
+    ],
+    name: 'Kill',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'owner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'epoch', internalType: 'Epoch', type: 'uint232', indexed: true },
+      {
+        name: 'tickLower',
+        internalType: 'int24',
+        type: 'int24',
+        indexed: false,
+      },
+      {
+        name: 'zeroForOne',
+        internalType: 'bool',
+        type: 'bool',
+        indexed: false,
+      },
+      {
+        name: 'liquidity',
+        internalType: 'uint128',
+        type: 'uint128',
+        indexed: false,
+      },
+    ],
+    name: 'Place',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'owner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'epoch', internalType: 'Epoch', type: 'uint232', indexed: true },
+      {
+        name: 'liquidity',
+        internalType: 'uint128',
+        type: 'uint128',
+        indexed: false,
+      },
+    ],
+    name: 'Withdraw',
+  },
+  { type: 'error', inputs: [], name: 'CrossedRange' },
+  { type: 'error', inputs: [], name: 'Filled' },
+  { type: 'error', inputs: [], name: 'InRange' },
+  { type: 'error', inputs: [], name: 'InsufficientLiquidity' },
+  { type: 'error', inputs: [], name: 'NotFilled' },
+  { type: 'error', inputs: [], name: 'NotPlugin' },
+  { type: 'error', inputs: [], name: 'NotPoolManagerToken' },
+  { type: 'error', inputs: [], name: 'ZeroLiquidity' },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // perpetual
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const perpetualAbi = [
+  {
+    stateMutability: 'nonpayable',
+    type: 'constructor',
+    inputs: [
+      { name: '_algebraFactory', internalType: 'address', type: 'address' },
+      { name: '_limitOrderPlugin', internalType: 'address', type: 'address' },
+      { name: '_swapRouter', internalType: 'address', type: 'address' },
+      { name: '_vaultFactory', internalType: 'address', type: 'address' },
+    ],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [],
+    name: 'algebraFactory',
+    outputs: [
+      { name: '', internalType: 'contract IAlgebraFactory', type: 'address' },
+    ],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [
+      { name: '_account', internalType: 'address', type: 'address' },
+      { name: '_collateralToken', internalType: 'address', type: 'address' },
+      { name: '_indexToken', internalType: 'address', type: 'address' },
+      { name: '_isLong', internalType: 'bool', type: 'bool' },
+    ],
+    name: 'checkPosition',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+  },
   {
     stateMutability: 'nonpayable',
     type: 'function',
@@ -1198,6 +1611,74 @@ export const perpetualAbi = [
     outputs: [
       { name: 'liquidityDelta', internalType: 'uint128', type: 'uint128' },
       { name: 'sizeDelta', internalType: 'uint256', type: 'uint256' },
+    ],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [
+      { name: '_collateralToken', internalType: 'address', type: 'address' },
+      { name: '_indexToken', internalType: 'address', type: 'address' },
+      { name: '_tickLower', internalType: 'int24', type: 'int24' },
+      { name: '_tickUpper', internalType: 'int24', type: 'int24' },
+      { name: '_liquidity', internalType: 'uint128', type: 'uint128' },
+    ],
+    name: 'getAmountsForLiquidity',
+    outputs: [
+      { name: 'amount0', internalType: 'uint256', type: 'uint256' },
+      { name: 'amount1', internalType: 'uint256', type: 'uint256' },
+    ],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [
+      { name: '_collateralToken', internalType: 'address', type: 'address' },
+      { name: '_indexToken', internalType: 'address', type: 'address' },
+      { name: '_tickLower', internalType: 'int24', type: 'int24' },
+    ],
+    name: 'getEntryAndTakeProfitPrice',
+    outputs: [
+      { name: 'entryPrice', internalType: 'uint160', type: 'uint160' },
+      { name: 'takeProfitPrice', internalType: 'uint160', type: 'uint160' },
+    ],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [
+      { name: '_token0', internalType: 'address', type: 'address' },
+      { name: '_token1', internalType: 'address', type: 'address' },
+      { name: '_tickLower', internalType: 'int24', type: 'int24' },
+      { name: '_isLong', internalType: 'bool', type: 'bool' },
+    ],
+    name: 'getEpoch',
+    outputs: [{ name: 'epoch', internalType: 'Epoch', type: 'uint232' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [
+      { name: 'token0', internalType: 'address', type: 'address' },
+      { name: 'token1', internalType: 'address', type: 'address' },
+      { name: '_tickLower', internalType: 'int24', type: 'int24' },
+      { name: '_tickUpper', internalType: 'int24', type: 'int24' },
+      { name: '_amount0', internalType: 'uint256', type: 'uint256' },
+      { name: '_amount1', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'getLiquidityForAmounts',
+    outputs: [{ name: 'liquidity', internalType: 'uint128', type: 'uint128' }],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [
+      { name: '_token0', internalType: 'address', type: 'address' },
+      { name: '_token1', internalType: 'address', type: 'address' },
+    ],
+    name: 'getPool',
+    outputs: [
+      { name: '', internalType: 'contract IAlgebraPool', type: 'address' },
     ],
   },
   {
@@ -1224,9 +1705,10 @@ export const perpetualAbi = [
           },
           { name: 'debt', internalType: 'uint256', type: 'uint256' },
           { name: 'liquidity', internalType: 'uint160', type: 'uint160' },
-          { name: 'tick', internalType: 'int24', type: 'int24' },
           { name: 'epoch', internalType: 'Epoch', type: 'uint232' },
           { name: 'realisedPnl', internalType: 'int256', type: 'int256' },
+          { name: 'entryPrice', internalType: 'uint160', type: 'uint160' },
+          { name: 'takeProfitPrice', internalType: 'uint160', type: 'uint160' },
         ],
       },
     ],
@@ -1242,7 +1724,7 @@ export const perpetualAbi = [
         components: [
           { name: 'collateralToken', internalType: 'address', type: 'address' },
           { name: 'indexToken', internalType: 'address', type: 'address' },
-          { name: 'tickLower', internalType: 'int24', type: 'int24' },
+          { name: 'takeProfitPrice', internalType: 'uint160', type: 'uint160' },
           { name: 'isLong', internalType: 'bool', type: 'bool' },
           {
             name: 'collateralAmount',
@@ -1257,6 +1739,105 @@ export const perpetualAbi = [
     outputs: [
       { name: 'liquidityDelta', internalType: 'uint128', type: 'uint128' },
       { name: 'sizeDelta', internalType: 'uint256', type: 'uint256' },
+    ],
+  },
+  {
+    stateMutability: 'pure',
+    type: 'function',
+    inputs: [
+      { name: '_collateralToken', internalType: 'address', type: 'address' },
+      { name: '_indexToken', internalType: 'address', type: 'address' },
+      { name: '_isLong', internalType: 'bool', type: 'bool' },
+    ],
+    name: 'isToken0Long',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+  },
+  {
+    stateMutability: 'nonpayable',
+    type: 'function',
+    inputs: [
+      {
+        name: '_params',
+        internalType: 'struct IPerpetual.KillPositionParams',
+        type: 'tuple',
+        components: [
+          { name: 'collateralToken', internalType: 'address', type: 'address' },
+          { name: 'indexToken', internalType: 'address', type: 'address' },
+          { name: 'isLong', internalType: 'bool', type: 'bool' },
+        ],
+      },
+    ],
+    name: 'killPosition',
+    outputs: [
+      { name: 'collateralDelta', internalType: 'uint256', type: 'uint256' },
+      { name: 'indexDelta', internalType: 'uint256', type: 'uint256' },
+    ],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [],
+    name: 'limitOrderPlugin',
+    outputs: [
+      { name: '', internalType: 'contract ILimitOrderPlugin', type: 'address' },
+    ],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    name: 'positions',
+    outputs: [
+      { name: 'size', internalType: 'uint256', type: 'uint256' },
+      { name: 'collateralAmount', internalType: 'uint256', type: 'uint256' },
+      { name: 'debt', internalType: 'uint256', type: 'uint256' },
+      { name: 'liquidity', internalType: 'uint160', type: 'uint160' },
+      { name: 'epoch', internalType: 'Epoch', type: 'uint232' },
+      { name: 'realisedPnl', internalType: 'int256', type: 'int256' },
+      { name: 'entryPrice', internalType: 'uint160', type: 'uint160' },
+      { name: 'takeProfitPrice', internalType: 'uint160', type: 'uint160' },
+    ],
+  },
+  {
+    stateMutability: 'pure',
+    type: 'function',
+    inputs: [
+      { name: 'tokenA', internalType: 'address', type: 'address' },
+      { name: 'tokenB', internalType: 'address', type: 'address' },
+    ],
+    name: 'sortTokens',
+    outputs: [
+      { name: 'token0', internalType: 'address', type: 'address' },
+      { name: 'token1', internalType: 'address', type: 'address' },
+    ],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [],
+    name: 'swapRouter',
+    outputs: [
+      { name: '', internalType: 'contract ISwapRouter', type: 'address' },
+    ],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [
+      { name: '_entryPrice', internalType: 'uint160', type: 'uint160' },
+      { name: '_takeProfitPrice', internalType: 'uint160', type: 'uint160' },
+      { name: '_isToken0Long', internalType: 'bool', type: 'bool' },
+    ],
+    name: 'validatePositionPrice',
+    outputs: [],
+  },
+  {
+    stateMutability: 'view',
+    type: 'function',
+    inputs: [],
+    name: 'vaultFactory',
+    outputs: [
+      { name: '', internalType: 'contract IVaultFactory', type: 'address' },
     ],
   },
   {
@@ -1306,7 +1887,12 @@ export const perpetualAbi = [
         type: 'uint160',
         indexed: false,
       },
-      { name: 'tick', internalType: 'int24', type: 'int24', indexed: false },
+      {
+        name: 'takeProfitPrice',
+        internalType: 'uint160',
+        type: 'uint160',
+        indexed: false,
+      },
     ],
     name: 'DecreasePosition',
   },
@@ -1357,7 +1943,12 @@ export const perpetualAbi = [
         type: 'uint160',
         indexed: false,
       },
-      { name: 'tick', internalType: 'int24', type: 'int24', indexed: false },
+      {
+        name: 'takeProfitPrice',
+        internalType: 'uint160',
+        type: 'uint160',
+        indexed: false,
+      },
     ],
     name: 'IncreasePosition',
   },
@@ -1394,9 +1985,14 @@ export const perpetualAbi = [
     ],
     name: 'InvalidPositionPrice',
   },
+  { type: 'error', inputs: [], name: 'NotImplemented' },
+  { type: 'error', inputs: [], name: 'PositionAlreadyExisted' },
+  { type: 'error', inputs: [], name: 'PositionNotExisted' },
   { type: 'error', inputs: [], name: 'PositionNotFound' },
   { type: 'error', inputs: [], name: 'PositionNotFulfilled' },
   { type: 'error', inputs: [], name: 'VaultNotExists' },
+  { type: 'error', inputs: [], name: 'priceOutOfRange' },
+  { type: 'error', inputs: [], name: 'tickOutOfRange' },
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3178,10 +3774,376 @@ export const useWatchErc20TransferEvent =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link limitOrderPluginAbi}__
+ */
+export const useReadLimitOrderPlugin = /*#__PURE__*/ createUseReadContract({
+  abi: limitOrderPluginAbi,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"ALGEBRA_BASE_PLUGIN_MANAGER"`
+ */
+export const useReadLimitOrderPluginAlgebraBasePluginManager =
+  /*#__PURE__*/ createUseReadContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'ALGEBRA_BASE_PLUGIN_MANAGER',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"basePluginFactory"`
+ */
+export const useReadLimitOrderPluginBasePluginFactory =
+  /*#__PURE__*/ createUseReadContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'basePluginFactory',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"epochInfos"`
+ */
+export const useReadLimitOrderPluginEpochInfos =
+  /*#__PURE__*/ createUseReadContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'epochInfos',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"epochNext"`
+ */
+export const useReadLimitOrderPluginEpochNext =
+  /*#__PURE__*/ createUseReadContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'epochNext',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"epochs"`
+ */
+export const useReadLimitOrderPluginEpochs =
+  /*#__PURE__*/ createUseReadContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'epochs',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"factory"`
+ */
+export const useReadLimitOrderPluginFactory =
+  /*#__PURE__*/ createUseReadContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'factory',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"getEpoch"`
+ */
+export const useReadLimitOrderPluginGetEpoch =
+  /*#__PURE__*/ createUseReadContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'getEpoch',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"getEpochLiquidity"`
+ */
+export const useReadLimitOrderPluginGetEpochLiquidity =
+  /*#__PURE__*/ createUseReadContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'getEpochLiquidity',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"isFilled"`
+ */
+export const useReadLimitOrderPluginIsFilled =
+  /*#__PURE__*/ createUseReadContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'isFilled',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"poolDeployer"`
+ */
+export const useReadLimitOrderPluginPoolDeployer =
+  /*#__PURE__*/ createUseReadContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'poolDeployer',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"tickLowerLasts"`
+ */
+export const useReadLimitOrderPluginTickLowerLasts =
+  /*#__PURE__*/ createUseReadContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'tickLowerLasts',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"tickSpacings"`
+ */
+export const useReadLimitOrderPluginTickSpacings =
+  /*#__PURE__*/ createUseReadContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'tickSpacings',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"wNativeToken"`
+ */
+export const useReadLimitOrderPluginWNativeToken =
+  /*#__PURE__*/ createUseReadContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'wNativeToken',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link limitOrderPluginAbi}__
+ */
+export const useWriteLimitOrderPlugin = /*#__PURE__*/ createUseWriteContract({
+  abi: limitOrderPluginAbi,
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"afterInitialize"`
+ */
+export const useWriteLimitOrderPluginAfterInitialize =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'afterInitialize',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"afterSwap"`
+ */
+export const useWriteLimitOrderPluginAfterSwap =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'afterSwap',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"algebraMintCallback"`
+ */
+export const useWriteLimitOrderPluginAlgebraMintCallback =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'algebraMintCallback',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"kill"`
+ */
+export const useWriteLimitOrderPluginKill =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'kill',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"place"`
+ */
+export const useWriteLimitOrderPluginPlace =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'place',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"setTickSpacing"`
+ */
+export const useWriteLimitOrderPluginSetTickSpacing =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'setTickSpacing',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"withdraw"`
+ */
+export const useWriteLimitOrderPluginWithdraw =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'withdraw',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link limitOrderPluginAbi}__
+ */
+export const useSimulateLimitOrderPlugin =
+  /*#__PURE__*/ createUseSimulateContract({ abi: limitOrderPluginAbi })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"afterInitialize"`
+ */
+export const useSimulateLimitOrderPluginAfterInitialize =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'afterInitialize',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"afterSwap"`
+ */
+export const useSimulateLimitOrderPluginAfterSwap =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'afterSwap',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"algebraMintCallback"`
+ */
+export const useSimulateLimitOrderPluginAlgebraMintCallback =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'algebraMintCallback',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"kill"`
+ */
+export const useSimulateLimitOrderPluginKill =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'kill',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"place"`
+ */
+export const useSimulateLimitOrderPluginPlace =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'place',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"setTickSpacing"`
+ */
+export const useSimulateLimitOrderPluginSetTickSpacing =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'setTickSpacing',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `functionName` set to `"withdraw"`
+ */
+export const useSimulateLimitOrderPluginWithdraw =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: limitOrderPluginAbi,
+    functionName: 'withdraw',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link limitOrderPluginAbi}__
+ */
+export const useWatchLimitOrderPluginEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: limitOrderPluginAbi })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `eventName` set to `"Fill"`
+ */
+export const useWatchLimitOrderPluginFillEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: limitOrderPluginAbi,
+    eventName: 'Fill',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `eventName` set to `"Kill"`
+ */
+export const useWatchLimitOrderPluginKillEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: limitOrderPluginAbi,
+    eventName: 'Kill',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `eventName` set to `"Place"`
+ */
+export const useWatchLimitOrderPluginPlaceEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: limitOrderPluginAbi,
+    eventName: 'Place',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link limitOrderPluginAbi}__ and `eventName` set to `"Withdraw"`
+ */
+export const useWatchLimitOrderPluginWithdrawEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: limitOrderPluginAbi,
+    eventName: 'Withdraw',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link perpetualAbi}__
  */
 export const useReadPerpetual = /*#__PURE__*/ createUseReadContract({
   abi: perpetualAbi,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link perpetualAbi}__ and `functionName` set to `"algebraFactory"`
+ */
+export const useReadPerpetualAlgebraFactory =
+  /*#__PURE__*/ createUseReadContract({
+    abi: perpetualAbi,
+    functionName: 'algebraFactory',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link perpetualAbi}__ and `functionName` set to `"checkPosition"`
+ */
+export const useReadPerpetualCheckPosition =
+  /*#__PURE__*/ createUseReadContract({
+    abi: perpetualAbi,
+    functionName: 'checkPosition',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link perpetualAbi}__ and `functionName` set to `"getAmountsForLiquidity"`
+ */
+export const useReadPerpetualGetAmountsForLiquidity =
+  /*#__PURE__*/ createUseReadContract({
+    abi: perpetualAbi,
+    functionName: 'getAmountsForLiquidity',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link perpetualAbi}__ and `functionName` set to `"getEntryAndTakeProfitPrice"`
+ */
+export const useReadPerpetualGetEntryAndTakeProfitPrice =
+  /*#__PURE__*/ createUseReadContract({
+    abi: perpetualAbi,
+    functionName: 'getEntryAndTakeProfitPrice',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link perpetualAbi}__ and `functionName` set to `"getEpoch"`
+ */
+export const useReadPerpetualGetEpoch = /*#__PURE__*/ createUseReadContract({
+  abi: perpetualAbi,
+  functionName: 'getEpoch',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link perpetualAbi}__ and `functionName` set to `"getLiquidityForAmounts"`
+ */
+export const useReadPerpetualGetLiquidityForAmounts =
+  /*#__PURE__*/ createUseReadContract({
+    abi: perpetualAbi,
+    functionName: 'getLiquidityForAmounts',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link perpetualAbi}__ and `functionName` set to `"getPool"`
+ */
+export const useReadPerpetualGetPool = /*#__PURE__*/ createUseReadContract({
+  abi: perpetualAbi,
+  functionName: 'getPool',
 })
 
 /**
@@ -3191,6 +4153,62 @@ export const useReadPerpetualGetPosition = /*#__PURE__*/ createUseReadContract({
   abi: perpetualAbi,
   functionName: 'getPosition',
 })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link perpetualAbi}__ and `functionName` set to `"isToken0Long"`
+ */
+export const useReadPerpetualIsToken0Long = /*#__PURE__*/ createUseReadContract(
+  { abi: perpetualAbi, functionName: 'isToken0Long' },
+)
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link perpetualAbi}__ and `functionName` set to `"limitOrderPlugin"`
+ */
+export const useReadPerpetualLimitOrderPlugin =
+  /*#__PURE__*/ createUseReadContract({
+    abi: perpetualAbi,
+    functionName: 'limitOrderPlugin',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link perpetualAbi}__ and `functionName` set to `"positions"`
+ */
+export const useReadPerpetualPositions = /*#__PURE__*/ createUseReadContract({
+  abi: perpetualAbi,
+  functionName: 'positions',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link perpetualAbi}__ and `functionName` set to `"sortTokens"`
+ */
+export const useReadPerpetualSortTokens = /*#__PURE__*/ createUseReadContract({
+  abi: perpetualAbi,
+  functionName: 'sortTokens',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link perpetualAbi}__ and `functionName` set to `"swapRouter"`
+ */
+export const useReadPerpetualSwapRouter = /*#__PURE__*/ createUseReadContract({
+  abi: perpetualAbi,
+  functionName: 'swapRouter',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link perpetualAbi}__ and `functionName` set to `"validatePositionPrice"`
+ */
+export const useReadPerpetualValidatePositionPrice =
+  /*#__PURE__*/ createUseReadContract({
+    abi: perpetualAbi,
+    functionName: 'validatePositionPrice',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link perpetualAbi}__ and `functionName` set to `"vaultFactory"`
+ */
+export const useReadPerpetualVaultFactory = /*#__PURE__*/ createUseReadContract(
+  { abi: perpetualAbi, functionName: 'vaultFactory' },
+)
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link perpetualAbi}__
@@ -3218,6 +4236,15 @@ export const useWritePerpetualIncreasePosition =
   })
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link perpetualAbi}__ and `functionName` set to `"killPosition"`
+ */
+export const useWritePerpetualKillPosition =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: perpetualAbi,
+    functionName: 'killPosition',
+  })
+
+/**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link perpetualAbi}__
  */
 export const useSimulatePerpetual = /*#__PURE__*/ createUseSimulateContract({
@@ -3240,6 +4267,15 @@ export const useSimulatePerpetualIncreasePosition =
   /*#__PURE__*/ createUseSimulateContract({
     abi: perpetualAbi,
     functionName: 'increasePosition',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link perpetualAbi}__ and `functionName` set to `"killPosition"`
+ */
+export const useSimulatePerpetualKillPosition =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: perpetualAbi,
+    functionName: 'killPosition',
   })
 
 /**

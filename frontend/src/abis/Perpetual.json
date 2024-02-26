@@ -1,5 +1,78 @@
 [
   {
+    "type": "constructor",
+    "inputs": [
+      {
+        "name": "_algebraFactory",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_limitOrderPlugin",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_swapRouter",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_vaultFactory",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "algebraFactory",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract IAlgebraFactory"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "checkPosition",
+    "inputs": [
+      {
+        "name": "_account",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_collateralToken",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_indexToken",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_isLong",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
     "type": "function",
     "name": "decreasePosition",
     "inputs": [
@@ -39,6 +112,186 @@
       }
     ],
     "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "getAmountsForLiquidity",
+    "inputs": [
+      {
+        "name": "_collateralToken",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_indexToken",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_tickLower",
+        "type": "int24",
+        "internalType": "int24"
+      },
+      {
+        "name": "_tickUpper",
+        "type": "int24",
+        "internalType": "int24"
+      },
+      {
+        "name": "_liquidity",
+        "type": "uint128",
+        "internalType": "uint128"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "amount0",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "amount1",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getEntryAndTakeProfitPrice",
+    "inputs": [
+      {
+        "name": "_collateralToken",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_indexToken",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_tickLower",
+        "type": "int24",
+        "internalType": "int24"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "entryPrice",
+        "type": "uint160",
+        "internalType": "uint160"
+      },
+      {
+        "name": "takeProfitPrice",
+        "type": "uint160",
+        "internalType": "uint160"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getEpoch",
+    "inputs": [
+      {
+        "name": "_token0",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_token1",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_tickLower",
+        "type": "int24",
+        "internalType": "int24"
+      },
+      {
+        "name": "_isLong",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "epoch",
+        "type": "uint232",
+        "internalType": "Epoch"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getLiquidityForAmounts",
+    "inputs": [
+      {
+        "name": "token0",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "token1",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_tickLower",
+        "type": "int24",
+        "internalType": "int24"
+      },
+      {
+        "name": "_tickUpper",
+        "type": "int24",
+        "internalType": "int24"
+      },
+      {
+        "name": "_amount0",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_amount1",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "liquidity",
+        "type": "uint128",
+        "internalType": "uint128"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getPool",
+    "inputs": [
+      {
+        "name": "_token0",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_token1",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract IAlgebraPool"
+      }
+    ],
+    "stateMutability": "view"
   },
   {
     "type": "function",
@@ -92,11 +345,6 @@
             "internalType": "uint160"
           },
           {
-            "name": "tick",
-            "type": "int24",
-            "internalType": "int24"
-          },
-          {
             "name": "epoch",
             "type": "uint232",
             "internalType": "Epoch"
@@ -105,6 +353,16 @@
             "name": "realisedPnl",
             "type": "int256",
             "internalType": "int256"
+          },
+          {
+            "name": "entryPrice",
+            "type": "uint160",
+            "internalType": "uint160"
+          },
+          {
+            "name": "takeProfitPrice",
+            "type": "uint160",
+            "internalType": "uint160"
           }
         ]
       }
@@ -131,9 +389,9 @@
             "internalType": "address"
           },
           {
-            "name": "tickLower",
-            "type": "int24",
-            "internalType": "int24"
+            "name": "takeProfitPrice",
+            "type": "uint160",
+            "internalType": "uint160"
           },
           {
             "name": "isLong",
@@ -166,6 +424,221 @@
       }
     ],
     "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "isToken0Long",
+    "inputs": [
+      {
+        "name": "_collateralToken",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_indexToken",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "_isLong",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "pure"
+  },
+  {
+    "type": "function",
+    "name": "killPosition",
+    "inputs": [
+      {
+        "name": "_params",
+        "type": "tuple",
+        "internalType": "struct IPerpetual.KillPositionParams",
+        "components": [
+          {
+            "name": "collateralToken",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "indexToken",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "isLong",
+            "type": "bool",
+            "internalType": "bool"
+          }
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "name": "collateralDelta",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "indexDelta",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "limitOrderPlugin",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract ILimitOrderPlugin"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "positions",
+    "inputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "size",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "collateralAmount",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "debt",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "liquidity",
+        "type": "uint160",
+        "internalType": "uint160"
+      },
+      {
+        "name": "epoch",
+        "type": "uint232",
+        "internalType": "Epoch"
+      },
+      {
+        "name": "realisedPnl",
+        "type": "int256",
+        "internalType": "int256"
+      },
+      {
+        "name": "entryPrice",
+        "type": "uint160",
+        "internalType": "uint160"
+      },
+      {
+        "name": "takeProfitPrice",
+        "type": "uint160",
+        "internalType": "uint160"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "sortTokens",
+    "inputs": [
+      {
+        "name": "tokenA",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "tokenB",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "token0",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "token1",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "pure"
+  },
+  {
+    "type": "function",
+    "name": "swapRouter",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract ISwapRouter"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "validatePositionPrice",
+    "inputs": [
+      {
+        "name": "_entryPrice",
+        "type": "uint160",
+        "internalType": "uint160"
+      },
+      {
+        "name": "_takeProfitPrice",
+        "type": "uint160",
+        "internalType": "uint160"
+      },
+      {
+        "name": "_isToken0Long",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "vaultFactory",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract IVaultFactory"
+      }
+    ],
+    "stateMutability": "view"
   },
   {
     "type": "event",
@@ -220,10 +693,10 @@
         "internalType": "uint160"
       },
       {
-        "name": "tick",
-        "type": "int24",
+        "name": "takeProfitPrice",
+        "type": "uint160",
         "indexed": false,
-        "internalType": "int24"
+        "internalType": "uint160"
       }
     ],
     "anonymous": false
@@ -281,10 +754,10 @@
         "internalType": "uint160"
       },
       {
-        "name": "tick",
-        "type": "int24",
+        "name": "takeProfitPrice",
+        "type": "uint160",
         "indexed": false,
-        "internalType": "int24"
+        "internalType": "uint160"
       }
     ],
     "anonymous": false
@@ -360,6 +833,21 @@
   },
   {
     "type": "error",
+    "name": "NotImplemented",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "PositionAlreadyExisted",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "PositionNotExisted",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "PositionNotFound",
     "inputs": []
   },
@@ -371,6 +859,16 @@
   {
     "type": "error",
     "name": "VaultNotExists",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "priceOutOfRange",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "tickOutOfRange",
     "inputs": []
   }
 ]

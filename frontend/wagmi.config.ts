@@ -6,6 +6,7 @@ import SWAP_ROUTER_ABI from './src/abis/SwapRouter.json'
 import VAULT_FACTORY_ABI from './src/abis/VaultFactory.json'
 import ALGEBRA_FACTORY_ABI from './src/abis/AlgebraFactory.json'
 import ALGEBRA_POOL_ABI from './src/abis/AlgebraPool.json'
+import LIMIT_ORDER_PLUGIN_ABI from './src/abis/LimitOrderPlugin.json'
 import {react} from "@wagmi/cli/plugins";
 export default defineConfig({
   out: 'src/generated.ts',
@@ -44,6 +45,11 @@ export default defineConfig({
       name: 'algebraPool',
       //@ts-ignore
       abi: ALGEBRA_POOL_ABI,
+    },
+    {
+      name: 'limitOrderPlugin',
+      //@ts-ignore
+      abi: LIMIT_ORDER_PLUGIN_ABI,
     },
   ],
   plugins: [
