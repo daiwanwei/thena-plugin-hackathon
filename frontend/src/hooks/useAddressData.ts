@@ -1,5 +1,7 @@
 'use client'
 
+import {useChainId} from "wagmi";
+
 export interface AddressData {
     perpetual: `0x${string}`
     vaultFactory: `0x${string}`
@@ -12,12 +14,23 @@ export interface AddressData {
 
 
 export default function useAddressData():AddressData{
+    const chainId = useChainId()
+    if (chainId === 97){
+        return {
+            perpetual: "0x78719659B56B87DD04E6aD82903d51de1afbf13D",
+            vaultFactory: "0xfFAE599ba8305739A3F0aD3dacED0f5F624D3A23",
+            poolFactory: "0xD4829bcA3cFecf576B64f4Cb3150E2196BF2b30B",
+            limitOrderPlugin: "0xf141a14984a02D5C250EF0Fe93dB146b57e897CC",
+            usdc: "0xcd55D6E8F74DD5863CC33B347f8C500C59FC2dF5",
+            wbnb: "0x8c2dcB633e8715379eE64FC2fd8726B883f298F1"
+        }
+    }
     return {
-        perpetual: "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
-        vaultFactory: "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
-        poolFactory: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
-        limitOrderPlugin: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
-        usdc: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-        wbnb: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+        perpetual: "0x78719659B56B87DD04E6aD82903d51de1afbf13D",
+        vaultFactory: "0xfFAE599ba8305739A3F0aD3dacED0f5F624D3A23",
+        poolFactory: "0xD4829bcA3cFecf576B64f4Cb3150E2196BF2b30B",
+        limitOrderPlugin: "0xf141a14984a02D5C250EF0Fe93dB146b57e897CC",
+        usdc: "0xcd55D6E8F74DD5863CC33B347f8C500C59FC2dF5",
+        wbnb: "0x8c2dcB633e8715379eE64FC2fd8726B883f298F1"
     }
 }
