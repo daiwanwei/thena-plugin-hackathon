@@ -16,6 +16,7 @@ export interface PerpData {
     // totalCollateral: string
     // pool data
     price: string
+    priceSqrt: bigint
     // user data
     collateralBalances: string
     collateralDecimals: number
@@ -74,7 +75,7 @@ export default function usePerpData(collateral:`0x${string}`,indexToken:`0x${str
     //     coinBalances:pTokenBalances
     // }=useCoinData(vault,user)
     return {
-        price,collateralBalances,collateralDecimals,getIndexTokenAmount
+        price,priceSqrt,collateralBalances,collateralDecimals,getIndexTokenAmount
     }
 }
 
