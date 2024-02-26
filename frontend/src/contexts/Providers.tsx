@@ -13,7 +13,7 @@ import {
 } from '@rainbow-me/rainbowkit/wallets';
 import {
     mainnet,
-    localhost
+    localhost, opBNBTestnet, bscTestnet
 } from 'wagmi/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider } from 'wagmi';
@@ -32,7 +32,8 @@ const config = getDefaultConfig({
         },
     ],
     chains: [
-        mainnet,
+        bscTestnet,
+        opBNBTestnet,
         localhost
     ],
     ssr: true,
