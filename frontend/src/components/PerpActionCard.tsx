@@ -115,7 +115,7 @@ export function ActionItem({collateral}: ActionItemProps) {
                     defaultValue="0"
                     min="0"
                     max="1000000"
-                    step="0.001"
+                    step="0.01"
                     onChange={onTakeProfitChange}
                     stringMode
                 />
