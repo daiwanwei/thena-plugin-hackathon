@@ -17,6 +17,7 @@ export interface PerpData {
     // pool data
     price: string
     priceSqrt: bigint
+    price0: string
     // user data
     collateralBalances: string
     collateralDecimals: number
@@ -45,6 +46,7 @@ export default function usePerpData(collateral:`0x${string}`,indexToken:`0x${str
     const collateralIsToken0=token0.toLowerCase()===collateral.toLowerCase()
     const priceSqrt=poolState? poolState[0]:BigInt(0)
     let price='0'
+    let price0=formatPrice(priceSqrt,true,5)
     if (priceSqrt!==BigInt(0)){
         price=formatPrice(priceSqrt,collateralIsToken0,5)
     }
@@ -75,7 +77,7 @@ export default function usePerpData(collateral:`0x${string}`,indexToken:`0x${str
     //     coinBalances:pTokenBalances
     // }=useCoinData(vault,user)
     return {
-        price,priceSqrt,collateralBalances,collateralDecimals,getIndexTokenAmount
+        price,price0,priceSqrt,collateralBalances,collateralDecimals,getIndexTokenAmount
     }
 }
 

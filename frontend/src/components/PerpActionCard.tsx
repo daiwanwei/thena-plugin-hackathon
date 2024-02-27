@@ -42,7 +42,7 @@ export function ActionItem({collateral}: ActionItemProps) {
     const collateralToken=collateral==='usdc'?usdc:wbnb
     const indexToken=collateral==='usdc'?wbnb:usdc
     const user=useUser()
-    const {price,getIndexTokenAmount,collateralBalances,collateralDecimals}=usePerpData(collateralToken,indexToken,user)
+    const {price,price0,getIndexTokenAmount,collateralBalances,collateralDecimals}=usePerpData(collateralToken,indexToken,user)
     const [leverage,setLeverage] = useState<number>(1);
     const [pay,setPay] = useState<number>(0);
     const [takeProfit,setTakeProfit] = useState<number>(0);
@@ -78,7 +78,7 @@ export function ActionItem({collateral}: ActionItemProps) {
             </div>
             <div className="flex flex-row justify-between gap-10">
                 <p>Token Price</p>
-                <p>{price}</p>
+                <p>{price0}</p>
             </div>
             <div className="flex flex-row justify-between gap-10">
                 <p>your Balances</p>
