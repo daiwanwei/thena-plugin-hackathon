@@ -1,9 +1,7 @@
-# Decentralized Perpetual Contract Protocol
+# Teahouse Marge
 
 ## Project Overview
-This project is a collection of smart contracts written in Solidity for the Ethereum blockchain.
-The contracts are designed to interact with the Algebra protocol, a decentralized finance (DeFi) platform.
-The contracts provide leveraged perpetual contract trading, and allow for earning liquidity rewards and liquidation rewards.
+Teahouse Marge is an innovative decentralized margin trading protocol that leverages the Thena Plugin to enhance liquidity and trading volume within Automated Market Makers (AMMs), benefiting the entire DeFi market. Our platform allows traders to harness true yield directly from market price fluctuations with minimal transaction fees. Simultaneously, investors can enjoy stable returns by providing liquidity to Teahouse Marge vaults. This creates a win-win situation for all parties, optimizing user experience in DeFi trading while revolutionizing the world of decentralized finance.
 
 ## Roles in the Contracts
 
