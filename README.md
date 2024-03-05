@@ -1,7 +1,7 @@
 # Teahouse Marge
 
 ## Project Overview
-Teahouse Marge is an innovative decentralized margin trading protocol that leverages the Thena Plugin to enhance liquidity and trading volume within Automated Market Makers (AMMs), benefiting the entire DeFi market. Our platform allows traders to harness true yield directly from market price fluctuations with minimal transaction fees. Simultaneously, investors can enjoy stable returns by providing liquidity to Teahouse Marge vaults. This creates a win-win situation for all parties, optimizing user experience in DeFi trading while revolutionizing the world of decentralized finance.
+Teahouse Marge is a revolutionary decentralized margin trading protocol, tailored to operate within THENA's Automated Market Maker (AMM) in the BNB Chain ecosystem. The protocol harnesses the unique features of THENA Plugins to introduce novel strategies and mechanisms in the DeFi sector, aiming to significantly enhance liquidity and trading volume.
 
 ## Roles in the Contracts
 
